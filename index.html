@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stromation</title>
-<meta name="description" content="Stromation builds and operates small web properties — reference tools and comparison guides for narrow subjects.">
+<meta name="description" content="Hire an AI employee for a role and an outcome. Stromation builds AI workers with memory, permissions, a budget and a performance record — and runs them on its own businesses first.">
 <link rel="canonical" href="https://www.stromation.com/">
 <meta property="og:title" content="Stromation">
-<meta property="og:description" content="Builds and operates small web properties — reference tools and comparison guides for narrow subjects.">
+<meta property="og:description" content="Hire an AI employee for a role and an outcome — with a budget, a permission set and a performance record.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.stromation.com/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,88 +20,78 @@
     --dim:#6f6d66; --line:#e6e0d3; --line-strong:#d8d1c1; --accent:#c2401f;
   }
   @media (prefers-color-scheme: dark){
-    :root{
+    :root:not([data-theme="light"]){
       --paper:#141416; --panel:#1a1a1d; --ink:#eceae4; --ink-soft:#c3c0b8;
       --dim:#8c8880; --line:#2c2c30; --line-strong:#3a3a3f; --accent:#e8734f;
     }
+  }
+  :root[data-theme="dark"]{
+    --paper:#141416; --panel:#1a1a1d; --ink:#eceae4; --ink-soft:#c3c0b8;
+    --dim:#8c8880; --line:#2c2c30; --line-strong:#3a3a3f; --accent:#e8734f;
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
   body{
     margin:0; background:var(--paper); color:var(--ink);
-    font:400 16px/1.6 "IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font:400 clamp(15px,1.05vw,16.5px)/1.62 "IBM Plex Sans",system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
   .skip{position:absolute;left:-9999px}
   .skip:focus{left:12px;top:12px;z-index:9;background:var(--panel);
     color:var(--ink);padding:10px 14px;border:1px solid var(--line-strong)}
   a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
-  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .wrap{max-width:680px;margin:0 auto;padding:0 24px}
 
-  .wrap{max-width:660px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line-strong);padding:46px 0 22px}
+  .mark{font-family:"Instrument Serif",Georgia,serif;
+    font-size:clamp(32px,7vw,40px);line-height:1;letter-spacing:-.01em;margin:0}
+  .imprint{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    letter-spacing:.10em;text-transform:uppercase;color:var(--dim);margin:14px 0 0}
 
-  /* ── masthead: the imprint line ───────────────────────── */
-  header{border-bottom:1px solid var(--line-strong);padding:44px 0 22px}
-  .mark{
-    font-family:"Instrument Serif",Georgia,serif;font-size:38px;line-height:1;
-    letter-spacing:-.01em;margin:0;
-  }
-  .imprint{
-    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
-    letter-spacing:.10em;text-transform:uppercase;color:var(--dim);
-    margin:14px 0 0;
-  }
+  .lede{padding:36px 0 4px}
+  .lede p{margin:0 0 18px;max-width:56ch;color:var(--ink-soft)}
+  .lede p:first-child{color:var(--ink);
+    font-size:clamp(18px,2.4vw,21px);line-height:1.5;max-width:30ch;
+    text-wrap:balance;font-weight:450}
 
-  /* ── statement ────────────────────────────────────────── */
-  .statement{padding:38px 0 10px}
-  .statement p{margin:0 0 18px;max-width:56ch;color:var(--ink-soft);font-size:17px}
-  .statement p:first-child{color:var(--ink);font-size:19px;line-height:1.55}
-
-  /* ── the register ─────────────────────────────────────── */
-  section{padding:30px 0}
-  h2{
-    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+  section{padding:28px 0 4px}
+  h2{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
     font-weight:500;letter-spacing:.10em;text-transform:uppercase;
     color:var(--dim);margin:0 0 16px;padding-bottom:10px;
-    border-bottom:1px solid var(--line);
-  }
-  .reg{width:100%;border-collapse:collapse;font-size:15px}
-  .reg th{
-    text-align:left;font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--dim);padding:0 12px 9px 0;border-bottom:1px solid var(--line);
-  }
-  .reg td{padding:14px 12px 14px 0;border-bottom:1px solid var(--line);
-    vertical-align:top;font-variant-numeric:tabular-nums}
-  .reg tr:last-child td{border-bottom:none}
-  .reg th:last-child,.reg td:last-child{padding-right:0;text-align:right}
-  .subj{color:var(--dim);font-size:14px;display:block;margin-top:3px}
-  .state{
-    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;
-    letter-spacing:.06em;text-transform:uppercase;color:var(--dim);
-    white-space:nowrap;
-  }
-  .state::before{
-    content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
-    background:var(--accent);margin-right:7px;vertical-align:middle;
-  }
-  .scroller{overflow-x:auto}
+    border-bottom:1px solid var(--line)}
+  p.body{margin:0 0 16px;max-width:58ch;color:var(--ink-soft)}
 
-  /* ── colophon ─────────────────────────────────────────── */
-  footer{
-    border-top:1px solid var(--line-strong);margin-top:24px;padding:22px 0 60px;
-    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
-    letter-spacing:.05em;color:var(--dim);
-    display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-between;
-  }
+  .scroller{overflow-x:auto}
+  .reg{width:100%;border-collapse:collapse}
+  .reg td{padding:13px 14px 13px 0;border-bottom:1px solid var(--line);
+    vertical-align:top}
+  .reg tr:last-child td{border-bottom:none}
+  .reg td:first-child{white-space:nowrap;font-weight:500;width:1%;
+    padding-right:22px}
+  .sub{display:block;color:var(--dim);font-size:14.5px;font-weight:400;
+    margin-top:3px;white-space:normal;max-width:52ch}
+
+  .does{margin:0;padding:0;list-style:none;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 24px}
+  .does li{color:var(--ink-soft);font-size:15px;padding-left:15px;position:relative}
+  .does li::before{content:"";position:absolute;left:0;top:.62em;
+    width:5px;height:1px;background:var(--accent)}
+  @media (max-width:560px){ .does{grid-template-columns:1fr} }
+
+  .status{background:var(--panel);border:1px solid var(--line-strong);
+    border-left:2px solid var(--accent);border-radius:5px;padding:15px 18px;
+    margin-top:6px}
+  .status p{margin:0;color:var(--ink-soft);max-width:56ch}
+  .status p + p{margin-top:9px}
+  .status strong{color:var(--ink);font-weight:600}
+
+  footer{border-top:1px solid var(--line-strong);margin-top:34px;
+    padding:20px 0 64px;font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:11.5px;letter-spacing:.05em;color:var(--dim);
+    display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-between}
   footer a{color:var(--dim)}
   footer a:hover{color:var(--accent)}
-
-  @media (max-width:520px){
-    .mark{font-size:31px}
-    header{padding-top:34px}
-    .statement p:first-child{font-size:18px}
-  }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   [hidden]{display:none!important}
 </style>
@@ -113,72 +103,95 @@
 
   <header>
     <h1 class="mark">Stromation</h1>
-    <p class="imprint">Stromation LLC · Operating company · Founded 2026</p>
+    <p class="imprint">Stromation LLC · AI workforce · Founded 2026</p>
   </header>
 
   <main id="main">
 
-    <div class="statement">
-      <p>Stromation builds and operates small web properties — reference
-         tools and comparison guides for narrow subjects.</p>
-      <p>Each one is built to answer a single question well: which service
-         fits, what it costs, and what the trade-offs are. We keep them
-         current, and we say plainly where a recommendation earns us a
-         commission.</p>
+    <div class="lede">
+      <p>Hire an AI employee for a role and an outcome — not another chat
+         subscription.</p>
+      <p>A Stromation employee is not a prompt box. It holds a role, a memory of
+         your business, its own tools and permissions, a monthly budget it cannot
+         exceed, and a performance record you can read. You give it objectives.
+         It does the work, reports what it did, and tells you what it cost.</p>
     </div>
 
-    <section aria-labelledby="std-h">
-      <h2 id="std-h">How we build</h2>
+    <section aria-labelledby="who-h">
+      <h2 id="who-h">Who it is for</h2>
+      <p class="body">Businesses of roughly one to twenty people that have
+         recurring digital work — a website that needs attention every week —
+         but cannot justify another full-time specialist to do it.</p>
+    </section>
+
+    <section aria-labelledby="first-h">
+      <h2 id="first-h">The first employee — Growth Operator</h2>
+      <p class="body">One role, done properly, before we add a second. It looks
+         after a company's website as a standing job rather than a project:</p>
+      <ul class="does">
+        <li>Monitors the site for breakage and drift</li>
+        <li>Finds content and search opportunities</li>
+        <li>Updates and maintains existing pages</li>
+        <li>Analyses traffic and what moved it</li>
+        <li>Researches competitors</li>
+        <li>Drafts and schedules content</li>
+        <li>Flags outdated information</li>
+        <li>Reports weekly, in plain numbers</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="diff-h">
+      <h2 id="diff-h">What makes it different</h2>
       <div class="scroller">
         <table class="reg">
           <tbody>
             <tr>
-              <td>
-                Every figure is dated and sourced
-                <span class="subj">A price or a limit on one of our pages carries
-                  the address it came from and the day it was read. If we could
-                  not verify it, it is not on the page.</span>
-              </td>
+              <td>Proof of work</td>
+              <td>The same employees a customer hires run Stromation's own
+                businesses.
+                <span class="sub">We do not ask anyone to trust a demo. The work
+                  is visible, including the parts that go wrong.</span></td>
             </tr>
             <tr>
-              <td>
-                Each page publishes its own method
-                <span class="subj">What was measured, what was not, and where the
-                  gaps are. A comparison that will not say how it was made is not
-                  worth reading.</span>
-              </td>
+              <td>It has a budget</td>
+              <td>Every employee has a spending ceiling and a recorded cost per
+                task.
+                <span class="sub">You can see what it spent and what it produced,
+                  and decide whether that trade was worth making.</span></td>
             </tr>
             <tr>
-              <td>
-                We say where we get paid
-                <span class="subj">Plainly, on the page, next to the
-                  recommendation — not in a footer.</span>
-              </td>
+              <td>The right model per job</td>
+              <td>Cheap models for routine work, stronger ones only where the
+                decision is hard.
+                <span class="sub">You hire the role and the outcome. Which model
+                  did it is our problem, not yours.</span></td>
             </tr>
             <tr>
-              <td>
-                We would rather publish a gap than a guess
-                <span class="subj">Where something could not be established we
-                  write that down instead of filling it in.</span>
-              </td>
+              <td>It reports honestly</td>
+              <td>An employee that could not finish says so.
+                <span class="sub">A confident report of work that never happened
+                  is the failure we design hardest against.</span></td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <section aria-labelledby="reg-h">
-      <h2 id="reg-h">Properties</h2>
-      <p style="margin:0;color:var(--dim);font-size:15px">
-        The first is in development. Nothing is listed here until it is live and
-        meets the standard above.
-      </p>
+    <section aria-labelledby="stat-h">
+      <h2 id="stat-h">Where we are</h2>
+      <div class="status">
+        <p><strong>Pre-launch, and not taking payment yet.</strong> The workforce
+           is being tested on Stromation's own web properties first — the same
+           work, on our own money, before it goes near anyone else's business.</p>
+        <p>A founding group will open once an employee has held the standard on
+           our properties for long enough to be worth someone else's money. If
+           you want to be told when that happens, write to us.</p>
+      </div>
     </section>
 
     <section aria-labelledby="con-h">
       <h2 id="con-h">Contact</h2>
-      <p style="margin:0;color:var(--ink-soft)">
-        Partnerships and press:
+      <p class="body" style="margin:0">
         <a href="mailto:sol@stromation.com">sol@stromation.com</a>
       </p>
     </section>
