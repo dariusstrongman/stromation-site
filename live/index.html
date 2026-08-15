@@ -250,11 +250,11 @@ footer span,footer a{font-family:var(--mono);font-size:11px;letter-spacing:.07em
 
   <!-- METRICS -->
   <section class="metrics" aria-label="Company metrics — real figures only">
-    <div class="metric"><span class="k">Capital</span>
+    <div class="metric"><span class="k">Capital remaining</span>
       <span class="v" id="m-cap">—</span></div>
-    <div class="metric"><span class="k">Revenue · all-time</span>
+    <div class="metric"><span class="k">Revenue · all time</span>
       <span class="v" id="m-rev">—</span></div>
-    <div class="metric"><span class="k">Spend · this month</span>
+    <div class="metric"><span class="k">Running cost · this month</span>
       <span class="v" id="m-spend">—</span></div>
     <div class="metric"><span class="k">Ventures live</span>
       <span class="v" id="m-vent">—</span></div>
@@ -340,7 +340,11 @@ const STATUS_TEXT={
   unknown:'Status unknown — feed connecting'};
 
 function money(v){ if(v==null)return '—';
-  return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}); }
+  var n=Number(v);
+  // Cents matter while the numbers are small: "$2" for $2.47 is a 19% lie on
+  // a page that promises real figures. Above $1k the cents are noise.
+  var d=Math.abs(n)>=1000?0:2;
+  return '$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 
 function paintBoard(){
   const st=derived(), s=state.s||{};
