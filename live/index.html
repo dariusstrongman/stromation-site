@@ -340,7 +340,11 @@ const STATUS_TEXT={
   unknown:'Status unknown — feed connecting'};
 
 function money(v){ if(v==null)return '—';
-  return '$'+Number(v).toLocaleString('en-US',{maximumFractionDigits:0}); }
+  var n=Number(v);
+  // Cents matter while the numbers are small: "$2" for $2.47 is a 19% lie on
+  // a page that promises real figures. Above $1k the cents are noise.
+  var d=Math.abs(n)>=1000?0:2;
+  return '$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
 
 function paintBoard(){
   const st=derived(), s=state.s||{};
