@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /watch/
+
+Sitemap: https://www.stromation.com/sitemap.xml

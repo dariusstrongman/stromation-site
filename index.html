@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stromation</title>
+<meta name="description" content="Stromation builds and operates small web properties — reference tools and comparison guides for narrow subjects.">
+<link rel="canonical" href="https://www.stromation.com/">
+<meta property="og:title" content="Stromation">
+<meta property="og:description" content="Builds and operates small web properties — reference tools and comparison guides for narrow subjects.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.stromation.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2317181c'/><circle cx='50' cy='50' r='20' fill='%23df4a2e'/></svg>">
+<style>
+  :root{
+    --paper:#f7f5ef; --panel:#fffdf8; --ink:#17181c; --ink-soft:#3c3d43;
+    --dim:#6f6d66; --line:#e6e0d3; --line-strong:#d8d1c1; --accent:#c2401f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#141416; --panel:#1a1a1d; --ink:#eceae4; --ink-soft:#c3c0b8;
+      --dim:#8c8880; --line:#2c2c30; --line-strong:#3a3a3f; --accent:#e8734f;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:400 16px/1.6 "IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .skip{position:absolute;left:-9999px}
+  .skip:focus{left:12px;top:12px;z-index:9;background:var(--panel);
+    color:var(--ink);padding:10px 14px;border:1px solid var(--line-strong)}
+  a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  .wrap{max-width:660px;margin:0 auto;padding:0 24px}
+
+  /* ── masthead: the imprint line ───────────────────────── */
+  header{border-bottom:1px solid var(--line-strong);padding:44px 0 22px}
+  .mark{
+    font-family:"Instrument Serif",Georgia,serif;font-size:38px;line-height:1;
+    letter-spacing:-.01em;margin:0;
+  }
+  .imprint{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    letter-spacing:.10em;text-transform:uppercase;color:var(--dim);
+    margin:14px 0 0;
+  }
+
+  /* ── statement ────────────────────────────────────────── */
+  .statement{padding:38px 0 10px}
+  .statement p{margin:0 0 18px;max-width:56ch;color:var(--ink-soft);font-size:17px}
+  .statement p:first-child{color:var(--ink);font-size:19px;line-height:1.55}
+
+  /* ── the register ─────────────────────────────────────── */
+  section{padding:30px 0}
+  h2{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    font-weight:500;letter-spacing:.10em;text-transform:uppercase;
+    color:var(--dim);margin:0 0 16px;padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .reg{width:100%;border-collapse:collapse;font-size:15px}
+  .reg th{
+    text-align:left;font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--dim);padding:0 12px 9px 0;border-bottom:1px solid var(--line);
+  }
+  .reg td{padding:14px 12px 14px 0;border-bottom:1px solid var(--line);
+    vertical-align:top;font-variant-numeric:tabular-nums}
+  .reg tr:last-child td{border-bottom:none}
+  .reg th:last-child,.reg td:last-child{padding-right:0;text-align:right}
+  .subj{color:var(--dim);font-size:14px;display:block;margin-top:3px}
+  .state{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--dim);
+    white-space:nowrap;
+  }
+  .state::before{
+    content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--accent);margin-right:7px;vertical-align:middle;
+  }
+  .scroller{overflow-x:auto}
+
+  /* ── colophon ─────────────────────────────────────────── */
+  footer{
+    border-top:1px solid var(--line-strong);margin-top:24px;padding:22px 0 60px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    letter-spacing:.05em;color:var(--dim);
+    display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-between;
+  }
+  footer a{color:var(--dim)}
+  footer a:hover{color:var(--accent)}
+
+  @media (max-width:520px){
+    .mark{font-size:31px}
+    header{padding-top:34px}
+    .statement p:first-child{font-size:18px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="wrap">
+
+  <header>
+    <h1 class="mark">Stromation</h1>
+    <p class="imprint">Stromation LLC · Operating company · Founded 2026</p>
+  </header>
+
+  <main id="main">
+
+    <div class="statement">
+      <p>Stromation builds and operates small web properties — reference
+         tools and comparison guides for narrow subjects.</p>
+      <p>Each one is built to answer a single question well: which service
+         fits, what it costs, and what the trade-offs are. We keep them
+         current, and we say plainly where a recommendation earns us a
+         commission.</p>
+    </div>
+
+    <section aria-labelledby="reg-h">
+      <h2 id="reg-h">Properties</h2>
+      <div class="scroller">
+        <table class="reg">
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col">Since</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="https://emailpicker.stromation.com">emailpicker.stromation.com</a>
+                <span class="subj">Email marketing platforms, compared on price and limits</span>
+              </td>
+              <td>2026</td>
+              <td><span class="state">Live</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="con-h">
+      <h2 id="con-h">Contact</h2>
+      <p style="margin:0;color:var(--ink-soft)">
+        Partnerships and press:
+        <a href="mailto:sol@stromation.com">sol@stromation.com</a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 Stromation LLC</span>
+    <span>stromation.com</span>
+  </footer>
+
+</div>
+</body>
+</html>

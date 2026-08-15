@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Office — Stromation</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{--ink:#0b0d10;--line:#1e232b;--text:#c9d1d9;--dim:#7d8590;
+        --amber:#f0a832;
+        --mono:ui-monospace,'JetBrains Mono','SF Mono',Menlo,Consolas,monospace}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--mono);
+       font-size:13px;min-height:100vh;display:flex;flex-direction:column;
+       align-items:center}
+  header{width:100%;display:flex;align-items:baseline;gap:14px;padding:14px 20px;
+         border-bottom:1px solid var(--line)}
+  .mark{letter-spacing:.28em;font-weight:700;font-size:12px}
+  .mark small{color:var(--amber);letter-spacing:.28em}
+  header a{color:var(--dim);text-decoration:none;margin-left:auto;font-size:12px}
+  header a:hover{color:var(--amber)}
+  #stage{image-rendering:pixelated;width:100vw;height:72vh;display:block}
+  #caption{color:var(--dim);min-height:20px;text-align:center;padding:0 16px}
+  #who{color:var(--amber)}
+  #ticker{color:var(--dim);font-size:12px;max-width:640px;text-align:center;
+          padding:10px 16px 30px;white-space:pre-wrap;word-wrap:break-word}
+</style>
+</head>
+<body>
+<header>
+  <span class="mark">STROMATION <small>/ THE OFFICE</small></span>
+  <a href="watch.html">full log →</a>
+</header>
+<canvas id="stage" width="640" height="400"></canvas>
+<div id="caption">connecting…</div>
+<div id="ticker"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const URL_='https://oushyhkmekemygzxvabh.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg';
+const sb=window.supabase.createClient(URL_,KEY);
+const cv=document.getElementById('stage'),cx=cv.getContext('2d');
+cx.imageSmoothingEnabled=false;
+const S=4,H=100;let W=160,GEO={};
+
+/* ---------- world state (only ever set from real rows) ---------- */
+const world={
+  sprite:null, name:'Sol', personality:null,
+  live:false, lastKind:null, bubble:null, bubbleUntil:0,
+  pos:{x:34,y:64}, target:{x:96,y:60}, walking:false, step:0,
+};
+let SPOTS={};
+
+/* ---------- room painting ---------- */
+function px(x,y,w,h,c){cx.fillStyle=c;cx.fillRect(x*S,y*S,w*S,h*S)}
+function room(dark){
+  const sh=c=>shade(c,dark?.72:1);
+  px(0,0,W,H,sh('#141821'));px(0,50,W,H-50,sh('#1d232e'));
+  for(let i=0;i<W;i+=10)px(i,50,1,H-50,sh('#171c26'));
+  const hr=new Date().getUTCHours();
+  const sky=hr>=6&&hr<18?'#2c4a6e':hr>=18&&hr<21?'#3a2c4e':'#0d1220';
+  px(GEO.winX,16,30,20,sh('#0a0c10'));px(GEO.winX+2,18,26,16,dark?shade(sky,.6):sky);
+  px(GEO.winX+14,18,1,16,sh('#0a0c10'));px(GEO.winX+2,25,26,1,sh('#0a0c10'));
+  px(12,42,14,22,sh('#2a2117'));px(23,52,2,3,sh('#f0a832'));
+  px(GEO.deskX,58,28,3,sh('#4a3826'));px(GEO.deskX+2,61,2,8,sh('#33261a'));px(GEO.deskX+24,61,2,8,sh('#33261a'));
+  px(GEO.deskX+9,52,10,6,sh('#0a0c10'));
+  px(GEO.deskX+10,53,8,4,world.live&&isTyping()?'#7fd0a0':sh('#1a212c'));
+  px(GEO.cofX,74,10,3,sh('#3a3a44'));px(GEO.cofX+3,70,3,4,sh('#c9d1d9'));px(GEO.cofX+4,69,1,1,sh('#e5534b'));
+  px(GEO.lightX,4,10,2,sh('#3a3f4a'));
+  if(world.live){cx.fillStyle='rgba(240,200,120,0.05)';
+    cx.beginPath();cx.moveTo((GEO.lightX+5)*S,6*S);cx.lineTo((GEO.lightX-11)*S,50*S);cx.lineTo((GEO.lightX+21)*S,50*S);cx.fill()}
+}
+function shade(hex,f){
+  const n=parseInt(hex.slice(1),16);
+  const r=(n>>16)*f|0,g=((n>>8)&255)*f|0,b=(n&255)*f|0;
+  return `rgb(${r},${g},${b})`;
+}
+
+/* ---------- the founder, as he drew himself ---------- */
+function layout(){
+  const cssH=Math.max(300,innerHeight*0.72);
+  W=Math.max(160,Math.round(H*innerWidth/cssH));
+  cv.width=W*S;cv.height=H*S;
+  cx.imageSmoothingEnabled=false;
+  const deskX=Math.round(W*0.55);
+  GEO={deskX,winX:deskX+20,cofX:Math.round(W*0.2),lightX:Math.round(W*0.5)-5};
+  SPOTS={door:{x:20,y:64},out:{x:6,y:64},desk:{x:deskX+13,y:60},
+         window:{x:deskX+34,y:38},coffee:{x:GEO.cofX+5,y:80}};
+}
+window.addEventListener('resize',layout);
+layout();
+// A page load is not an arrival: he was already at work before you
+// opened the tab. Start him where he belongs, not at the door.
+world.pos={...SPOTS.desk};world.target={...SPOTS.desk};
+
+function drawStro(){
+  const rest=(!world.live&&!world.walking)?1:0;   // resting, not stuck
+  const p=world.pos, bob=(world.walking?(world.step>>3)%2:0)+rest;
+  if(!world.sprite){          // he hasn't chosen a self yet: a waiting outline
+    cx.strokeStyle='#4b5460';cx.setLineDash([3,3]);
+    cx.strokeRect((p.x-8)*S,(p.y-16+bob)*S,16*S,16*S);cx.setLineDash([]);
+    return;
+  }
+  const {palette,grid}=world.sprite;
+  for(let r=0;r<16;r++)for(let c=0;c<16;c++){
+    const v=grid[r][c];if(!v)continue;
+    px(p.x-8+c,p.y-16+r+bob,1,1,palette[v-1]||'#fff');
+  }
+}
+function bubble(){
+  if(!world.bubble||Date.now()>world.bubbleUntil)return;
+  const t=world.bubble.slice(0,46),p=world.pos;
+  cx.font='11px ui-monospace,monospace';
+  const w=cx.measureText(t).width+12;
+  const bx=Math.min(cv.width-w-4,Math.max(4,(p.x)*S-w/2)),by=(p.y-24)*S;
+  cx.fillStyle='#e8eaf0';roundRect(bx,by,w,18,4);cx.fill();
+  cx.fillStyle='#0b0d10';cx.fillText(t,bx+6,by+13);
+}
+function roundRect(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);
+  cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);
+  cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
+
+/* ---------- animation ---------- */
+function isTyping(){return ['Bash','Write','Edit'].includes(world.lastKind)}
+function tick(){
+  const p=world.pos,t=world.target;
+  const dx=t.x-p.x,dy=t.y-p.y,d=Math.hypot(dx,dy);
+  world.walking=d>1;
+  if(world.walking){p.x+=dx/d*.55;p.y+=dy/d*.55;world.step++}
+  room(!world.live);
+  drawStro();
+  bubble();
+  requestAnimationFrame(tick);
+}
+
+/* ---------- events drive everything ---------- */
+function onEvent(e){
+  world.lastKind=e.title;
+  const say=(txt,ms=6000)=>{world.bubble=txt;world.bubbleUntil=Date.now()+ms};
+  if(e.kind==='session_start'){if(!world.live)world.pos={...SPOTS.door};world.live=true;
+    world.target={...SPOTS.desk};say('good morning.')}
+  else if(e.kind==='session_end'){say('done for now.');
+    setTimeout(()=>{world.target={...SPOTS.desk};
+      setTimeout(()=>{world.live=false},2600)},1200)}
+  else if(e.kind==='thought'){world.target={...SPOTS.window};
+    say((e.body||'thinking…'))}
+  else if(e.kind==='tool_use'){
+    if(e.title==='mcp__company__escalate'||e.title==='escalate'){
+      world.target={...SPOTS.door};say('need your approval!',9000)}
+    else if(e.title==='WebSearch'||e.title==='WebFetch'){
+      world.target={...SPOTS.desk};say('researching…',3000)}
+    else if(e.title==='mcp__company__set_appearance'){
+      world.target={...SPOTS.coffee};say('deciding who I am…',5000)}
+    else{world.target={...SPOTS.desk}}
+  }
+  document.getElementById('ticker').textContent=
+    (e.body||e.title||e.kind||'').slice(0,140);
+  setCaption();
+}
+function avatarURL(){
+  if(!world.sprite)return null;
+  const c=document.createElement('canvas');c.width=16;c.height=16;
+  const g=c.getContext('2d');
+  const {palette,grid}=world.sprite;
+  for(let r=0;r<16;r++)for(let col=0;col<16;col++){const v=grid[r][col];
+    if(v){g.fillStyle=palette[v-1]||'#fff';g.fillRect(col,r,1,1)}}
+  return c.toDataURL();
+}
+function applyAvatar(){
+  const u=avatarURL();if(!u)return;
+  let l=document.querySelector('link[rel="icon"]');
+  if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l)}
+  l.href=u;
+}
+function nextBeat(){const n=new Date(),hrs=[6,13,20];
+  for(const h of hrs){const t=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate(),h));if(t>n)return t}
+  return new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1,6))}
+function setCaption(){
+  const c=document.getElementById('caption');
+  if(world.live){c.innerHTML=`${avatarURL()?`<img src="${avatarURL()}" style="width:20px;height:20px;image-rendering:pixelated;vertical-align:-4px;margin-right:6px">`:``}<span id="who">${world.name}</span> is in the office${world.personality?' — <i>'+esc(world.personality)+'</i>':''}`}
+  else{const ms=nextBeat()-new Date(),h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);
+    c.innerHTML=`${avatarURL()?`<img src="${avatarURL()}" style="width:20px;height:20px;image-rendering:pixelated;vertical-align:-4px;margin-right:6px">`:``}office is dark — <span id="who">${world.name}</span> returns in ${h}h ${String(m).padStart(2,'0')}m`}
+}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- load + realtime ---------- */
+async function load(){
+  const emp=await sb.from('employees').select('name,sprite,personality')
+    .eq('role','Founder & CEO').limit(1).single();
+  if(emp.data){world.name=emp.data.name;world.sprite=emp.data.sprite;
+    world.personality=emp.data.personality}
+  const wk=await sb.from('wakeups').select('status').order('started_at',{ascending:false}).limit(1);
+  world.live=wk.data?.[0]?.status==='running';
+  if(world.live)world.pos={...SPOTS.desk};
+  setCaption();
+}
+sb.channel('office')
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},p=>onEvent(p.new))
+  .on('postgres_changes',{event:'UPDATE',schema:'public',table:'employees'},p=>{
+    world.sprite=p.new.sprite;applyAvatar();world.personality=p.new.personality;setCaption()})
+  .subscribe();
+load().then(()=>{applyAvatar();tick()});
+setInterval(setCaption,30000);
+</script>
+</body>
+</html>
