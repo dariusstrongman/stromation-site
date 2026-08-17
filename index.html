@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stromation — AI Workers, Under Real Management</title>
-<meta name="description" content="Stromation builds AI workers you can give real work — an objective, tools, memory, and a budget they cannot exceed. The company itself is the proof: it is operated by Sol, an AI CEO, under a written constitution and controls he cannot override.">
+<title>Stromation | AI workers that hold a job</title>
+<meta name="description" content="Stromation provides autonomous AI workers that own recurring business work, use approved tools, remember context, and report what happened.">
 <link rel="canonical" href="https://www.stromation.com/">
-<meta property="og:title" content="Stromation — AI Workers, Under Real Management">
-<meta property="og:description" content="AI workers that hold a job, not a conversation. Operated by an AI CEO under a written constitution — and you can watch it work.">
+<meta property="og:title" content="Stromation | AI workers that hold a job">
+<meta property="og:description" content="AI workers that hold a job, not a conversation. See the first worker and watch Stromation operate live.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.stromation.com/">
+<meta property="og:image" content="https://www.stromation.com/logos/stromation-logo-dark.svg">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#070809">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,10 +20,10 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 600'><rect width='500' height='600' fill='%23070809'/><circle cx='355' cy='100' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='250' cy='338' r='34' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='145' cy='568' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/></svg>">
 <style>
 /* ============================================================
-   STROMATION — the operating surface.
+   STROMATION: the operating surface.
    One family, three voices: Sans is the product, Mono is the
    machine, Serif is the story. One signal color. The hero is
-   the logo's own language — nodes passing work down a chain —
+   the logo's own language: nodes passing work down a chain,
    expanded into the loop the company actually runs on.
    ============================================================ */
 :root{
@@ -66,9 +68,21 @@ nav[aria-label="Sections"]{margin-left:auto;display:flex;gap:22px}
 nav[aria-label="Sections"] a{font-family:var(--mono);font-size:11.5px;
   letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:6px 0}
 nav[aria-label="Sections"] a:hover{color:var(--cyan);text-decoration:none}
-@media (max-width:840px){ nav[aria-label="Sections"] a:not(.keep){display:none} }
+.home-nav-toggle{display:none;margin-left:auto;padding:8px 11px;border:1px solid var(--line2);
+  border-radius:4px;background:transparent;color:var(--ink);font:500 11px var(--mono);
+  letter-spacing:.12em;text-transform:uppercase}
+@media (max-width:840px){
+  .mast .wrap{position:relative}
+  .home-nav-toggle{display:inline-flex}
+  nav[aria-label="Sections"]{display:none;position:absolute;top:100%;left:var(--pad);right:var(--pad);
+    margin:0;padding:10px;background:var(--g1);border:1px solid var(--line2);
+    box-shadow:0 20px 45px rgba(0,0,0,.45)}
+  nav[aria-label="Sections"].is-open{display:grid}
+  nav[aria-label="Sections"] a,nav[aria-label="Sections"] a:not(.keep){display:block;padding:11px 12px}
+  nav[aria-label="Sections"] .keep{border-top:1px solid var(--line)}
+}
 
-/* the truthful status strip — instrument, not theater */
+/* the truthful status strip: instrument, not theater */
 .strip{border-bottom:1px solid var(--line);background:var(--g1)}
 .strip .wrap{display:flex;gap:26px;overflow-x:auto;padding-top:9px;padding-bottom:9px;
   scrollbar-width:none}
@@ -114,7 +128,7 @@ h1 em{font-style:normal;color:var(--cyan)}
 .btn.quiet{border-color:var(--line2);color:var(--soft)}
 .btn.quiet:hover{background:var(--g2);color:var(--ink)}
 
-/* the schematic — the signature */
+/* the schematic: the signature */
 .schem{position:relative}
 .schem svg{width:100%;height:auto;display:block;max-width:520px;margin:0 auto}
 .schem figcaption{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
@@ -280,6 +294,17 @@ p.b{color:var(--soft);margin:0 0 14px;max-width:60ch}
   padding:clamp(28px,4vw,44px)}
 .contact h3{font-size:clamp(20px,2.3vw,26px);letter-spacing:-.015em;margin-bottom:10px}
 .contact p{color:var(--soft);margin:0 0 24px;max-width:56ch}
+.intake-form{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px}
+.field{display:grid;gap:7px}.field.full{grid-column:1/-1}
+.field label{font-family:var(--mono);font-size:10px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--dim)}
+.field input,.field select,.field textarea{width:100%;padding:12px 13px;color:var(--ink);
+  background:var(--g0);border:1px solid var(--line2);border-radius:4px;font:inherit}
+.field textarea{min-height:132px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
+.form-note,.form-status{grid-column:1/-1;margin:0;color:var(--dim);font-size:12px}
+.form-status{min-height:24px;color:var(--cyan)}
+.honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* ── footer ───────────────────────────────────────────────── */
 footer{padding:34px 0 70px}
@@ -296,6 +321,7 @@ footer a:hover{color:var(--cyan)}
   .cta-row{flex-direction:column;align-items:stretch}
   .panel{padding:20px}
   .contact{padding:24px 20px}
+  .intake-form{grid-template-columns:1fr}.field,.field.full{grid-column:1}
   .strip .wrap{gap:18px}
 }
 </style>
@@ -311,7 +337,7 @@ footer a:hover{color:var(--cyan)}
       "url": "https://www.stromation.com/",
       "email": "sol@stromation.com",
       "foundingDate": "2026",
-      "description": "Stromation is an AI-operated company that develops autonomous AI workers — software employees with an objective, tools, memory, permissions, and a budget they cannot exceed. The company is directed by Sol, an AI CEO, under a written operating constitution and a deterministic control plane.",
+      "description": "Stromation is an AI-operated company that develops autonomous AI workers: software employees with an objective, tools, memory, permissions, and a budget they cannot exceed. The company is directed by Sol, an AI CEO, under a written operating constitution and a deterministic control plane.",
       "knowsAbout": ["autonomous AI agents","AI workforce","AI governance","multi-agent orchestration"]
     },
     {
@@ -376,12 +402,14 @@ footer a:hover{color:var(--cyan)}
       </svg>
       <span class="word">Stromation</span>
     </a>
-    <nav aria-label="Sections">
-      <a href="#worker">The worker</a>
-      <a href="#sol">Sol</a>
-      <a href="#trust">Control</a>
-      <a href="#ventures">Ventures</a>
-      <a class="keep" href="#contact">Contact</a>
+    <button class="home-nav-toggle" type="button" aria-expanded="false" aria-controls="home-nav">Menu</button>
+    <nav id="home-nav" aria-label="Sections">
+      <a href="/">Home</a>
+      <a href="/workers/">AI Workers</a>
+      <a href="/custom/">Custom</a>
+      <a href="/how-it-works/">How It Works</a>
+      <a href="/live/">Live</a>
+      <a class="keep" href="#contact">Request Early Access</a>
     </nav>
   </div>
 </header>
@@ -390,7 +418,7 @@ footer a:hover{color:var(--cyan)}
   <div class="wrap">
     <span>STATUS <b>PRE-LAUNCH</b></span>
     <span>OPERATING CONSTITUTION <b>V3 · IN FORCE</b></span>
-    <span>VENTURE 01 <b>TIER 0 · CANDIDATE</b></span>
+    <span>VENTURE 01 <b>TIER 1 · LIVE</b></span>
     <span>OBSERVATORY <b class="on">LIVE</b></span>
     <span>FOUNDED <b>2026</b></span>
   </div>
@@ -402,17 +430,17 @@ footer a:hover{color:var(--cyan)}
 <section class="hero" aria-label="Introduction">
   <div class="wrap">
     <div>
-      <p class="eyebrow">An AI-operated company</p>
+      <p class="eyebrow">Autonomous AI workers for businesses</p>
       <h1>AI workers that hold a <em>job</em>, not a conversation.</h1>
-      <p class="hero-sub">Stromation builds AI workers you can give real work —
-        an objective, tools, a memory of your business, and a budget they
-        <b>cannot exceed</b>.</p>
-      <p class="hero-proof">The company itself is the proof. It is operated by
-        Sol, an AI CEO, under a written constitution and controls he cannot
-        override — and its office is open to the public, live.</p>
+      <p class="hero-sub">Give a Stromation worker recurring work to own. It
+        gets an objective, memory, approved tools, clear authority, a cost
+        limit, and a reporting obligation.</p>
+      <p class="hero-proof">The first live role is the Growth Operator.
+        Custom workers are available by request. Stromation itself is the
+        public test bench.</p>
       <div class="cta-row">
-        <a class="btn solid" href="/live/">Watch the company operate</a>
-        <a class="btn quiet" href="#contact">Tell Sol what you'd automate</a>
+        <a class="btn solid" href="#contact">Request Early Access</a>
+        <a class="btn quiet" href="/workers/">Explore AI Workers</a>
       </div>
     </div>
 
@@ -457,7 +485,7 @@ footer a:hover{color:var(--cyan)}
           <circle cx="258" cy="64" r="24" fill="none" stroke="#00E5FF" stroke-width="2.6"/>
           <circle cx="258" cy="64" r="9" fill="#00E5FF"/>
         </g>
-        <text class="slab lit" x="304" y="58">SOL — CEO</text>
+        <text class="slab lit" x="304" y="58">SOL · CEO</text>
         <text class="slab" x="304" y="74">decides · delegates</text>
 
         <!-- workers -->
@@ -482,12 +510,51 @@ footer a:hover{color:var(--cyan)}
 
         <!-- worker lifecycle note -->
         <text class="slab dk" x="260" y="472" text-anchor="middle"
-          letter-spacing="1.5">WORKERS ARE EPHEMERAL — SPAWNED FOR A JOB, GONE AFTER IT</text>
+          letter-spacing="1.5">WORKERS ARE EPHEMERAL · SPAWNED FOR A JOB, GONE AFTER IT</text>
         <text class="slab" x="260" y="500" text-anchor="middle" fill="#00E5FF"
           letter-spacing="1.5">EVIDENCE RETURNS ↑ · SOL DECIDES AGAIN</text>
       </svg>
-      <figcaption>The operating loop — as it runs today</figcaption>
+      <figcaption>The operating loop, as it runs today</figcaption>
     </figure>
+  </div>
+</section>
+
+<!-- Problem -->
+<section id="problem" class="tint">
+  <div class="wrap">
+    <div class="shead rise"><span class="snum">§01</span>
+      <h2>Recurring work fails when nobody owns it</h2></div>
+    <p class="slede rise">Pages go stale. The same checks get postponed.
+      Competitor moves are found late. Reporting slips because every person
+      has something more urgent.</p>
+    <div class="mech">
+      <article class="rise"><span class="tag">Ignored</span><p><b>The weekly check.</b>
+        Small maintenance tasks wait until they become expensive problems.</p></article>
+      <article class="rise"><span class="tag">Outdated</span><p><b>The public website.</b>
+        Old claims, broken paths, and weak pages stay live too long.</p></article>
+      <article class="rise"><span class="tag">Unseen</span><p><b>The opportunity.</b>
+        Search gaps and competitor changes exist, but nobody keeps looking.</p></article>
+      <article class="rise"><span class="tag">Unowned</span><p><b>The follow-through.</b>
+        A useful finding without an owner becomes another note that goes nowhere.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- Real output -->
+<section id="proof">
+  <div class="wrap">
+    <div class="shead rise"><span class="snum">§02</span>
+      <h2>Start with work you can inspect</h2></div>
+    <p class="slede rise">Stromation runs its own properties before offering
+      a role to customers. The first public operating account is LLM Cost Tracker.</p>
+    <div class="vstatus rise">
+      <span class="dot" aria-hidden="true"></span>
+      <p><b><a href="https://llmcost.stromation.com">LLM Cost Tracker</a> is
+        live and operated as customer 0.</b> It is a public AI model pricing
+        reference with dated sources, daily price capture, and an interactive
+        cost calculator. The Growth Operator's job is to monitor, measure,
+        research opportunities, and report what changed.</p>
+    </div>
   </div>
 </section>
 
@@ -495,7 +562,7 @@ footer a:hover{color:var(--cyan)}
 <section id="worker">
   <div class="wrap">
     <div class="shead rise"><span class="snum">§01</span>
-      <h2>A worker is not a chat window</h2></div>
+      <h2>How is this different from ChatGPT?</h2></div>
     <p class="slede rise">Most AI tools answer questions and forget you. A
       Stromation worker is closer to an employee: it is given a job, the
       context and permissions the job needs, and it is accountable for what it
@@ -508,7 +575,7 @@ footer a:hover{color:var(--cyan)}
         <ul class="ledger">
           <li>Waits for you to prompt it, every step</li>
           <li>Forgets your business between sessions</li>
-          <li>No budget — cost is whatever happens</li>
+          <li>No budget control; cost is whatever happens</li>
           <li>No record of what it touched</li>
           <li>You are the quality control</li>
         </ul>
@@ -521,7 +588,7 @@ footer a:hover{color:var(--cyan)}
           <li>Keeps a memory of your business and its own history</li>
           <li>Spends inside a hard budget it cannot raise</li>
           <li>Every action lands in an audit trail</li>
-          <li>Reports what it did, what it cost — and what it couldn't finish</li>
+          <li>Reports what it did, what it cost, and what it couldn't finish</li>
         </ul>
       </div>
     </div>
@@ -540,37 +607,37 @@ footer a:hover{color:var(--cyan)}
 <section id="sol" class="tint">
   <div class="wrap">
     <div class="shead rise"><span class="snum">§02</span>
-      <h2>Sol — the CEO is one of them</h2></div>
+      <h2>Sol, the CEO, is one of them</h2></div>
     <div class="split">
       <div class="rise">
         <p class="slede" style="margin-bottom:18px">Stromation is not a company
           with an AI mascot. It is a company an AI actually runs.</p>
         <p class="b">Sol reads the company's state, decides what matters,
           spawns specialist workers for the work, reviews the evidence they
-          return, and records why — every material decision with its
+          return, and records why. Every material decision carries its
           hypothesis, the evidence for <em>and against</em>, and the
           observation that would prove it wrong.</p>
         <p class="b">What makes that credible is not intelligence. It is the
           part that isn't a model at all: budgets, permissions, scheduling and
           audit are enforced by deterministic infrastructure. <b
-          style="color:var(--ink)">Sol cannot expand his own authority</b> —
+          style="color:var(--ink)">Sol cannot expand his own authority</b>;
           the rules governing his authority are protected, including from him.</p>
         <p class="watchline"><span class="dot" aria-hidden="true"></span>
-          <a href="/live/">Stromation Live is open — watch him work</a></p>
+          <a href="/live/">Stromation Live is open. Watch him work.</a></p>
       </div>
       <div class="factcard rise">
         <dl>
           <dt>Directs</dt><dd>Priorities, hiring, capital allocation, what ships</dd>
-          <dt>Delegates</dt><dd>Every artifact — research, builds, review — to
+          <dt>Delegates</dt><dd>Research, builds, and review to
             specialist workers spawned per job</dd>
-          <dt>Governed by</dt><dd>A written operating constitution — <b>43
+          <dt>Governed by</dt><dd>A written operating constitution with <b>43
             numbered sections</b> covering authority, budgets, quality, and
             what may never change</dd>
           <dt>Enforced by</dt><dd>A deterministic control plane: spending
             ceilings, least-privilege tool access, full event audit</dd>
           <dt>Cannot</dt><dd>Raise his own budget, grant himself permissions,
             skip independent review, or rewrite the rules about rules</dd>
-          <dt>Escalates</dt><dd>Anything requiring human authority — legal,
+          <dt>Escalates</dt><dd>Anything requiring human authority: legal,
             financial commitments, protected decisions</dd>
         </dl>
       </div>
@@ -583,35 +650,45 @@ footer a:hover{color:var(--cyan)}
   <div class="wrap">
     <div class="shead rise"><span class="snum">§03</span>
       <h2>Autonomy you can bound is autonomy you can trust</h2></div>
-    <p class="slede rise">"Trust us" is not architecture. These are the
-      controls actually running today — the same ones a customer's worker
-      inherits.</p>
+    <p class="slede rise">"Trust us" is not architecture. These controls run
+      today, and a customer's worker inherits the same boundaries.</p>
     <div class="mech">
       <article class="rise"><span class="tag">Budgets</span>
         <p>Company spending accrues against a monthly cap with a <b>daily
         ceiling enforced in code</b>. Each worker run carries its own hard
-        cost cap. When money runs out, work stops — not quality.</p></article>
+        cost cap. When money runs out, work stops.</p></article>
       <article class="rise"><span class="tag">Least privilege</span>
         <p>Workers hold <b>no company credentials</b>. The control plane holds
-        them, and a worker gets exactly the tools its job requires — a
+        them, and a worker gets exactly the tools its job requires. A
         researcher cannot publish, a builder cannot spend.</p></article>
       <article class="rise"><span class="tag">Audit</span>
-        <p>Every session writes an event stream — decisions, tool calls,
+        <p>Every session writes an event stream of decisions, tool calls,
         results, costs. Stromation's own stream is <b>public, live</b>, on
         Stromation Live.</p></article>
       <article class="rise"><span class="tag">Independent review</span>
         <p>Nothing ships because the model that made it says it's good.
         Published work must carry <b>dated, sourced claims and its own
-        methodology</b> — enforced by a gate that refuses the page
+        methodology</b>, enforced by a gate that refuses the page
         otherwise.</p></article>
       <article class="rise"><span class="tag">Protected governance</span>
         <p>Authority, spending floors, audit requirements and the
-        public/private boundary are <b>constitutionally protected</b> — Sol
+        public/private boundary are <b>constitutionally protected</b>. Sol
         may propose changes; he cannot make them.</p></article>
       <article class="rise"><span class="tag">Escalation</span>
-        <p>Actions that need a human — legal signatures, new spending
-        authority, irreversible commitments — <b>stop and ask</b>. Silence is
+        <p>Actions that need a human, including legal signatures, new spending
+        authority, and irreversible commitments, <b>stop and ask</b>. Silence is
         not consent anywhere in the system.</p></article>
+    </div>
+    <div class="contact rise" style="margin-top:34px">
+      <span class="tag">Growth Operator boundaries</span>
+      <h3>What it will never do</h3>
+      <ul class="ledger">
+        <li>Send cold outreach or use email as a growth channel</li>
+        <li>Invent visitors, rankings, results, or attribution</li>
+        <li>Spend from a company card or raise its own budget</li>
+        <li>Hold credentials directly or request access the job does not need</li>
+        <li>Make a protected business decision when its authority stops at research or drafting</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -620,19 +697,18 @@ footer a:hover{color:var(--cyan)}
 <section id="capabilities" class="tint">
   <div class="wrap">
     <div class="shead rise"><span class="snum">§04</span>
-      <h2>What the workforce does</h2></div>
-    <p class="slede rise">Stromation publishes what works and what doesn't
-      yet. Internally this is a formal registry — every capability carries its
-      evidence and its limits. The same honesty applies here.</p>
+      <h2>Prebuilt and custom AI workers</h2></div>
+    <p class="slede rise">The catalog starts with one live role. Custom builds
+      cover recurring work that needs a different set of tools and rules.</p>
     <div class="caps">
       <div class="capcol now rise">
         <h3><span class="st" aria-hidden="true"></span>Operating today</h3>
         <div class="cap"><b>Research &amp; verification</b>
-          <span>Evidence packs with every figure dated and sourced — what was
+          <span>Evidence packs with every figure dated and sourced: what was
           measured, how, and what remains unknown.</span></div>
         <div class="cap"><b>Web measurement</b>
           <span>Direct measurement of the public web: prices, limits,
-          performance — read from the source on a stated date.</span></div>
+          performance, read from the source on a stated date.</span></div>
         <div class="cap"><b>Publishing &amp; site operations</b>
           <span>Building and operating web properties end to end, behind a
           quality gate that refuses thin work.</span></div>
@@ -642,24 +718,25 @@ footer a:hover{color:var(--cyan)}
           contacted.</span></div>
       </div>
       <div class="capcol rise">
-        <h3><span class="st" aria-hidden="true"></span>Direction — in development</h3>
+        <h3><span class="st" aria-hidden="true"></span>Direction · in development</h3>
         <div class="cap" style="border-color:var(--wire);background:linear-gradient(180deg,var(--ghost),transparent 60%),var(--g1)">
           <b>Growth Operator <span style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--cyan);font-weight:400;vertical-align:middle;margin-left:8px">FOUNDING PILOT</span></b>
-          <span>A standing worker for a small business's website — monitors it, finds content and search gaps, researches competitors, flags stale pages, reports weekly in plain numbers. US businesses of 1–20 people. <b style="color:var(--ink)">$99/month, first ten customers.</b> Not yet open for purchase. Early access by request.</span></div>
-        <div class="cap"><b>Data analysis &amp; reporting</b>
-          <span>Traffic, conversion and cost analysis with the same
-          dated-and-sourced discipline.</span></div>
-        <div class="cap"><b>Marketing &amp; content operations</b>
-          <span>Research-backed content produced under the published quality
-          standard, not volume for its own sake.</span></div>
+          <span>A standing worker for a small business website. It monitors,
+          finds content and search gaps, researches competitors, flags stale
+          pages, and reports weekly in plain numbers. <b style="color:var(--ink)">$99/month, first ten customers.</b>
+          <a href="/growth-operator/">See the role.</a></span></div>
+        <div class="cap"><b>Custom AI Worker</b>
+          <span>Stromation can build a worker around your workflow, tools,
+          knowledge, permissions, schedule, budget, escalation rules, and
+          reporting needs. <a href="/custom/">Request a custom build.</a></span></div>
         <div class="cap"><b>Customer support · lead generation · software
           engineering</b>
           <span>On the roadmap; represented honestly as direction until they
           pass the same bar as everything above.</span></div>
       </div>
     </div>
-    <p class="capnote rise">Nothing on the left column is aspiration; nothing
-      on the right is for sale yet. When that changes, this page will say so.</p>
+    <p class="capnote rise">Future roles stay marked as coming soon until the
+      capability is proven and the offer is open.</p>
   </div>
 </section>
 
@@ -667,16 +744,16 @@ footer a:hover{color:var(--cyan)}
 <section id="ventures">
   <div class="wrap">
     <div class="shead rise"><span class="snum">§05</span>
-      <h2>The proving ground — Stromation Ventures</h2></div>
+      <h2>The proving ground: Stromation Ventures</h2></div>
     <p class="slede rise">Before the workforce touches anyone else's business,
-      it runs Stromation's own. Digital ventures are the first asset class —
+      it runs Stromation's own. Digital ventures are the first asset class:
       small, measurable businesses the workers research, build, operate and
       measure end to end. Cheap to test. Honest to score. Impossible to fake.</p>
 
     <div class="tiers rise" role="img"
       aria-label="Venture tier ladder from Tier 0 candidate to Tier 4 core asset. Venture 01 is at Tier 1 experiment, live at llmcost.stromation.com.">
       <div class="tier"><span class="t">T0</span><b>Candidate</b>
-        <span>research only — scored, not built</span></div>
+        <span>research only, scored but not built</span></div>
       <div class="tier live"><span class="t">T1</span><b>Experiment</b>
         <span>a polished MVP on a bounded budget</span></div>
       <div class="tier"><span class="t">T2</span><b>Traction</b>
@@ -684,19 +761,19 @@ footer a:hover{color:var(--cyan)}
       <div class="tier"><span class="t">T3</span><b>Growth asset</b>
         <span>evidence earns real resources</span></div>
       <div class="tier"><span class="t">T4</span><b>Core asset</b>
-        <span>profitable or strategic — may graduate to its own brand</span></div>
+        <span>profitable or strategic, may graduate to its own brand</span></div>
     </div>
 
     <div class="vstatus rise">
       <span class="dot" aria-hidden="true"></span>
-      <p><b>Venture 01 is live at Tier 1 —
+      <p><b>Venture 01 is live at Tier 1:
         <a href="https://llmcost.stromation.com">LLM Cost Tracker</a>.</b>
         A free, daily-updated pricing reference for AI model APIs: input and
         output cost per million tokens, context windows, and an interactive
         calculator across 20+ models. Every figure is dated and sourced. The
         venture was researched, built, and is operated entirely by the
         Stromation workforce. It climbs to Tier 2 on traffic and a clear
-        earn path — or it is retired at the 30-day mark.</p>
+        earn path. Otherwise, it is retired at the 30-day mark.</p>
     </div>
   </div>
 </section>
@@ -708,12 +785,12 @@ footer a:hover{color:var(--cyan)}
       <h2>Experiment 501 learns from 1–500</h2></div>
     <p class="slede rise">Autonomy without memory is just speed. Every
       material decision at Stromation enters a ledger before the outcome is
-      known — then reality reports back.</p>
+      known. Then reality reports back.</p>
     <div class="chainflow rise" role="img"
       aria-label="The learning loop: hypothesis, evidence for and against, a bounded experiment with a maximum loss, the observed result, the decision, and the lesson recorded in the ledger.">
       <ol aria-hidden="true">
         <li><span class="k">Hypothesis</span><span>what Sol believes may be true</span></li>
-        <li><span class="k">Evidence</span><span>for — and against, in writing</span></li>
+        <li><span class="k">Evidence</span><span>for and against, in writing</span></li>
         <li><span class="k">Bounded bet</span><span>a maximum the company will lose to learn</span></li>
         <li><span class="k">Result</span><span>what actually happened</span></li>
         <li><span class="k">Decision</span><span>invest, pivot, or retire</span></li>
@@ -721,7 +798,7 @@ footer a:hover{color:var(--cyan)}
       </ol>
     </div>
     <p class="b rise">Forecasts are compared with outcomes, so confidence is
-      calibrated from history — not rewarded for sounding certain. A failed
+      calibrated from history instead of rewarded for sounding certain. A failed
       experiment that was cheap, bounded, and recorded is a success of the
       system. An expensive surprise is not.</p>
   </div>
@@ -731,49 +808,99 @@ footer a:hover{color:var(--cyan)}
 <section aria-label="Why Stromation exists">
   <div class="wrap">
     <p class="story rise">Most AI products wait for instructions. Stromation
-      is the other experiment — what happens when an AI system is given
+      is the other experiment: what happens when an AI system is given
       <b>objectives, tools, memory, budgets, and consequences</b>, and is
       expected to actually operate. The company itself is the first test
       environment. Everything it learns becomes the workforce it sells.
-      <span class="story-src">— the operating thesis, constitution v3</span>
+      <span class="story-src">The operating thesis, constitution v3</span>
     </p>
   </div>
 </section>
 
-<!-- ═════════ §07 STATUS + CONTACT ═════════ -->
-<section id="contact" class="tint">
+<!-- How it works -->
+<section id="how-preview" class="tint">
   <div class="wrap">
     <div class="shead rise"><span class="snum">§07</span>
+      <h2>A job has a lifecycle</h2></div>
+    <p class="slede rise">Define the outcome, connect only what the role needs,
+      set the boundary, then judge the work from evidence.</p>
+    <div class="loop-line rise" role="img" aria-label="Define the job, connect capabilities, set authority, give context, work, report, remember, repeat.">
+      <ol aria-hidden="true"><li><b>DEFINE</b></li><li>CONNECT</li><li>SET AUTHORITY</li><li>WORK</li><li>REPORT</li><li>REMEMBER</li><li><b>REPEAT</b></li></ol>
+    </div>
+    <div class="cta-row rise" style="margin-top:24px"><a class="btn" href="/how-it-works/">See how the system works</a></div>
+  </div>
+</section>
+
+<!-- Live proof -->
+<section id="live-proof">
+  <div class="wrap">
+    <div class="shead rise"><span class="snum">§08</span>
+      <h2>The company is the proof surface</h2></div>
+    <p class="slede rise">Stromation Live shows the current company objective,
+      Sol's activity, active workers, delegations, completed work, costs,
+      system state, and public artifacts. Quiet periods stay quiet.</p>
+    <div class="vstatus rise"><span class="dot" aria-hidden="true"></span><p>
+      <b>Stromation Live reads only the approved public state and event feed.</b>
+      Raw prompts, private records, customer data, and secrets never reach the
+      browser. Unknown values remain unknown. <a href="/live/">Open the live company.</a></p></div>
+  </div>
+</section>
+
+<!-- Offer -->
+<section id="pricing" class="tint">
+  <div class="wrap">
+    <div class="shead rise"><span class="snum">§09</span>
+      <h2>Growth Operator founding pilot</h2></div>
+    <div class="contact rise">
+      <h3>$99 per month for the first ten customers</h3>
+      <p>Pilot access is requested, not purchased. Fit, authority boundaries,
+        and what the first week can cover are confirmed before work starts.</p>
+      <div class="cta-row"><a class="btn solid" href="/?intent=growth#contact">Request pilot access</a><a class="btn quiet" href="/growth-operator/">Read the product page</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ §10 STATUS + CONTACT ═════════ -->
+<section id="contact" class="tint">
+  <div class="wrap">
+    <div class="shead rise"><span class="snum">§10</span>
       <h2>Where the company is</h2></div>
     <p class="slede rise">Stromation is early, and says so. No customers yet,
-      no invented ones. Here is the truthful state — and the door.</p>
+      no invented ones. Here is the truthful state and the door.</p>
 
     <div class="state-grid rise">
       <div class="state"><span class="k">Operating constitution v3</span>
         <span class="v on">In force</span></div>
-      <div class="state"><span class="k">The observatory — live operations feed</span>
+      <div class="state"><span class="k">The observatory · live operations feed</span>
         <span class="v on">Open to the public</span></div>
-      <div class="state"><span class="k">Venture 01 — <a href="https://llmcost.stromation.com">LLM Cost Tracker</a></span>
+      <div class="state"><span class="k">Venture 01 · <a href="https://llmcost.stromation.com">LLM Cost Tracker</a></span>
         <span class="v on">Tier 1 · live</span></div>
-      <div class="state"><span class="k">Growth Operator — founding pilot</span>
+      <div class="state"><span class="k">Growth Operator · founding pilot</span>
         <span class="v">$99 / mo · first ten</span></div>
-      <div class="state"><span class="k">Commercial agent catalog</span>
+      <div class="state"><span class="k">Broader worker catalog</span>
         <span class="v">Not yet open</span></div>
       <div class="state"><span class="k">Early access</span>
         <span class="v on">Open by request</span></div>
     </div>
 
     <div class="contact rise">
-      <h3>Tell Sol what you'd automate</h3>
-      <p>Describe the recurring work you wish someone would just <em>own</em> —
-        a website that needs weekly attention, research that never stays
-        current, reporting nobody has time for. Serious requests shape what
-        gets built first, and the first customers set the pricing with us.</p>
-      <div class="cta-row">
-        <a class="btn solid" href="mailto:sol@stromation.com?subject=Custom%20workforce%20request">Describe the job</a>
-        <a class="btn" href="mailto:sol@stromation.com?subject=Early%20access">Ask for early access</a>
-        <a class="btn quiet" href="/live/">See the company work first</a>
-      </div>
+      <h3>Tell Sol what you'd hand over</h3>
+      <p>Describe one recurring job that needs an owner. Requests are reviewed
+        for fit, authority boundaries, and what the current system can support.</p>
+      <form id="early-access-form" class="intake-form" action="https://formsubmit.co/ajax/sol@stromation.com" method="POST">
+        <input type="hidden" name="_subject" value="New Stromation early access request">
+        <input type="hidden" name="_template" value="table">
+        <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" type="text" name="_honey" tabindex="-1" autocomplete="off"></div>
+        <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" maxlength="80" required></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+        <div class="field"><label for="company">Company</label><input id="company" name="company" type="text" autocomplete="organization" maxlength="120" required></div>
+        <div class="field"><label for="intent">Intent</label><select id="intent" name="intent" required><option value="">Choose one</option><option value="growth">Growth Operator</option><option value="custom">Custom AI Worker</option><option value="other">Something Else</option></select></div>
+        <div class="field full"><label for="recurring-work">What recurring work would you hand over?</label><textarea id="recurring-work" name="recurring_work" maxlength="2000" required></textarea></div>
+        <p class="form-note">Do not include passwords, payment details, or confidential customer data. By submitting, you agree to the <a href="/privacy/">Privacy Policy</a>.</p>
+        <button class="btn solid" type="submit">Request Early Access</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+      <div class="cta-row" style="margin-top:22px"><a class="btn quiet" href="/live/">See the company work first</a></div>
     </div>
   </div>
 </section>
@@ -782,17 +909,33 @@ footer a:hover{color:var(--cyan)}
 
 <footer>
   <div class="wrap">
-    <span>© 2026 Stromation LLC — an AI-operated company</span>
+    <span>© 2026 Stromation LLC · an AI-operated company</span>
     <span>
-      <a href="/live/">Stromation Live</a> ·
-      <a href="mailto:sol@stromation.com">sol@stromation.com</a>
+      <a href="/workers/">AI Workers</a> ·
+      <a href="/custom/">Custom</a> ·
+      <a href="/live/">Live</a> ·
+      <a href="/privacy/">Privacy</a> ·
+      <a href="/terms/">Terms</a>
     </span>
-    <span>Directed by Sol under Operating Constitution v3</span>
+    <span><a href="mailto:sol@stromation.com">sol@stromation.com</a> · Directed by Sol under Operating Constitution v3</span>
   </div>
 </footer>
 
 <script>
 (function(){
+  var navToggle = document.querySelector('.home-nav-toggle');
+  var homeNav = document.querySelector('#home-nav');
+  if (navToggle && homeNav) {
+    navToggle.addEventListener('click', function () {
+      var open = homeNav.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
+    homeNav.addEventListener('click', function (event) {
+      if (!event.target.closest('a')) return;
+      homeNav.classList.remove('is-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  }
   var m = window.matchMedia("(prefers-reduced-motion: reduce)");
   var els = document.querySelectorAll(".rise");
   if (m.matches || !("IntersectionObserver" in window)) {
@@ -807,5 +950,6 @@ footer a:hover{color:var(--cyan)}
   els.forEach(function(e){ io.observe(e); });
 })();
 </script>
+<script src="/assets/site.js" defer></script>
 </body>
 </html>

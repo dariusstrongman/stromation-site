@@ -1,0 +1,118 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const root = path.resolve(__dirname, "..");
+const routes = [
+  "/", "/workers/", "/growth-operator/", "/custom/", "/how-it-works/",
+  "/live/", "/privacy/", "/terms/", "/technology/", "/governance/"
+];
+
+function routeFile(route) {
+  return route === "/" ? path.join(root, "index.html") : path.join(root, route, "index.html");
+}
+
+function readRoute(route) {
+  return fs.readFileSync(routeFile(route), "utf8");
+}
+
+function stripQuery(value) {
+  return value.split("?")[0].split("#")[0];
+}
+
+test("every intended public route exists with launch metadata and one H1", () => {
+  for (const route of routes) {
+    const file = routeFile(route);
+    assert.equal(fs.existsSync(file), true, `${route} is missing`);
+    const html = readRoute(route);
+    assert.equal((html.match(/<h1\b/gi) || []).length, 1, `${route} must have one H1`);
+    assert.match(html, /<title>[^<]+<\/title>/i, `${route} title`);
+    assert.match(html, /<meta\s+name="description"\s+content="[^"]+"/i, `${route} description`);
+    assert.match(html, /<link\s+rel="canonical"\s+href="https:\/\/www\.stromation\.com\//i, `${route} canonical`);
+    const socialImage = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
+    assert.ok(socialImage, `${route} social image`);
+    const imagePath = new URL(socialImage[1]).pathname;
+    assert.equal(fs.existsSync(path.join(root, imagePath)), true, `${route} social image file`);
+  }
+});
+
+test("internal page links and fragments resolve", () => {
+  for (const route of routes) {
+    const html = readRoute(route);
+    const hrefs = [...html.matchAll(/<a\b[^>]*\shref="([^"]+)"/gi)].map((match) => match[1]);
+    for (const href of hrefs) {
+      if (/^(?:https?:|mailto:|tel:)/i.test(href)) continue;
+      const [rawPath, fragment] = href.split("#");
+      let targetRoute = stripQuery(rawPath || route);
+      if (!targetRoute.startsWith("/")) continue;
+      if (!targetRoute.endsWith("/") && !path.extname(targetRoute)) targetRoute += "/";
+      const target = targetRoute === "/" ? path.join(root, "index.html") : path.join(root, targetRoute, "index.html");
+      assert.equal(fs.existsSync(target), true, `${route} links to missing ${href}`);
+      if (fragment) {
+        const targetHtml = fs.readFileSync(target, "utf8");
+        const escaped = fragment.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        assert.match(targetHtml, new RegExp(`\\bid=["']${escaped}["']`, "i"), `${route} links to missing fragment ${href}`);
+      }
+    }
+  }
+});
+
+test("structured data is valid JSON", () => {
+  for (const route of routes) {
+    const html = readRoute(route);
+    const blocks = [...html.matchAll(/<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
+    for (const [, source] of blocks) assert.doesNotThrow(() => JSON.parse(source), `${route} JSON-LD`);
+  }
+});
+
+test("sitemap contains every intended route exactly once", () => {
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const found = [...sitemap.matchAll(/<loc>https:\/\/www\.stromation\.com([^<]*)<\/loc>/g)]
+    .map((match) => match[1] || "/");
+  assert.deepEqual(found.sort(), [...routes].sort());
+});
+
+test("legacy watch URLs keep intentional redirects", () => {
+  for (const name of ["index.html", "office.html", "replay.html", "story.html", "watch.html"]) {
+    const html = fs.readFileSync(path.join(root, "watch", name), "utf8");
+    assert.match(html, /http-equiv="refresh"/i, `watch/${name}`);
+    assert.match(html, /content="0;url=\/(?:live\/)?"/i, `watch/${name}`);
+  }
+  assert.match(fs.readFileSync(path.join(root, "robots.txt"), "utf8"), /Disallow:\s*\/watch\//);
+});
+
+test("Live keeps its real public feed and stable page heading", () => {
+  const html = readRoute("/live/");
+  const js = fs.readFileSync(path.join(root, "live", "live.js"), "utf8");
+  assert.match(html, /<h1\s+id="live-title">Stromation Live<\/h1>/);
+  assert.match(html, /<h2\s+id="objective-title">Objective not published<\/h2>/);
+  assert.match(js, /PUBLIC_TABLES\s*=\s*Object\.freeze\(\["public_state", "public_events"\]\)/);
+  assert.match(js, /\.from\(PUBLIC_TABLES\[0\]\)/);
+  assert.match(js, /\.from\(PUBLIC_TABLES\[1\]\)/);
+  assert.match(js, /subscribe\(/);
+});
+
+test("public offer copy avoids fabricated proof and retired products", () => {
+  const source = routes.map(readRoute).join("\n");
+  assert.doesNotMatch(source, /testimonial|trusted by|customers include|guaranteed ROI/i);
+  assert.doesNotMatch(source, /BidEngine|ContractReview|PolicyBot|ConvertAPI|ResumeGo/i);
+  assert.match(readRoute("/growth-operator/"), /first public weekly report is not ready yet/i);
+  assert.match(readRoute("/workers/"), /Coming soon/i);
+});
+
+test("early access uses the approved FormSubmit intake and discloses it", () => {
+  const home = readRoute("/");
+  assert.match(home, /<form\s+id="early-access-form"[^>]+action="https:\/\/formsubmit\.co\/ajax\/sol@stromation\.com"[^>]+method="POST"/i);
+  for (const name of ["name", "email", "company", "intent", "recurring_work", "_honey"]) {
+    assert.match(home, new RegExp(`\\bname=["']${name}["']`, "i"), `missing form field ${name}`);
+  }
+  assert.match(home, /<option value="growth">Growth Operator<\/option>/);
+  assert.match(home, /<option value="custom">Custom AI Worker<\/option>/);
+  assert.match(home, /<option value="other">Something Else<\/option>/);
+  const contact = home.match(/<section id="contact"[\s\S]*?<\/section>/i)[0];
+  assert.doesNotMatch(contact, /mailto:/i);
+  const privacy = readRoute("/privacy/");
+  assert.match(privacy, /FormSubmit/);
+  assert.match(privacy, /retains form submissions for 30 days/i);
+});
