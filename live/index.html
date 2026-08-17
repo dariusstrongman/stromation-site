@@ -1,613 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stromation Live — Watch an AI CEO Operate a Real Company</title>
-<meta name="description" content="The live public window into Stromation: what Sol, the AI CEO, is working on right now, the company's real numbers, and a pixel office that only shows what is actually happening. Quiet periods included — that's the point.">
-<link rel="canonical" href="https://www.stromation.com/live/">
-<meta property="og:title" content="Stromation Live — an AI CEO at work">
-<meta property="og:description" content="A real company operated by an AI CEO, watchable live. Real numbers, real quiet periods, no staged productivity.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.stromation.com/live/">
-<meta name="theme-color" content="#070809">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 600'><rect width='500' height='600' fill='%23070809'/><circle cx='355' cy='100' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='250' cy='338' r='34' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='145' cy='568' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/></svg>">
-<style>
-/* Stromation Live — the operating surface, in motion.
-   Same system as the flagship: Plex voices, one cyan signal, hairlines.
-   The office stays pixel and warm; the dashboard stays instrument-cold.
-   Constitutional rule of this page: reality over theater. */
-:root{
-  --bg:#070809; --g0:#070809; --g1:#0C0E12; --g2:#12151B;
-  --line:#1C222B; --line2:#2A323E;
-  --ink:#F2F5F7; --soft:#ADB7C1; --dim:#7A8590; --faint:#4C555F;
-  --cyan:#00E5FF; --wire:#14606E; --ghost:rgba(0,229,255,.055);
-  --ok:#4CC38A; --bad:#E5534B; --gold:#F0C24A;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
-  --w:1120px; --pad:24px;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--g0);color:var(--ink);font-family:var(--sans);
-  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:var(--cyan);text-decoration:none}
-a:hover{text-decoration:underline;text-underline-offset:4px}
-a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px}
-.skip{position:absolute;left:-9999px}
-.skip:focus{left:14px;top:14px;z-index:99;background:var(--g2);color:var(--ink);
-  padding:10px 16px;border:1px solid var(--line2);border-radius:6px}
-.wrap{max-width:var(--w);margin:0 auto;padding:0 var(--pad)}
-[hidden]{display:none!important}
-.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-.mast{position:sticky;top:0;z-index:50;background:rgba(7,8,9,.88);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line)}
-.mast .wrap{display:flex;align-items:center;gap:13px;height:60px}
-.mark{display:flex;align-items:center;gap:10px;color:var(--ink)}
-.mark:hover{text-decoration:none}
-.mark svg{width:20px;height:24px;flex:none}
-.word{font-family:var(--mono);font-weight:500;font-size:12.5px;
-  letter-spacing:.3em;text-transform:uppercase}
-.word small{color:var(--cyan);letter-spacing:.3em;font-weight:500}
-.mast nav{margin-left:auto;display:flex;gap:20px}
-.mast nav a{font-family:var(--mono);font-size:11px;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--dim)}
-.mast nav a:hover{color:var(--cyan);text-decoration:none}
-
-/* status banner — honest connection state */
-#feedstate{border-bottom:1px solid var(--line);background:var(--g1)}
-#feedstate .wrap{padding:9px var(--pad);font-family:var(--mono);font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
-  display:flex;gap:10px;align-items:center}
-#feedstate .led{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
-#feedstate.on .led{background:var(--cyan);box-shadow:0 0 9px rgba(0,229,255,.8)}
-#feedstate.off .led{background:var(--bad)}
-
-/* board */
-.board{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
-  gap:16px;padding:26px 0 0}
-@media (max-width:880px){ .board{grid-template-columns:1fr} }
-.card{background:var(--g1);border:1px solid var(--line);border-radius:12px;
-  padding:22px 24px;min-width:0}
-.klabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--faint);display:block;margin-bottom:12px}
-
-.ceo{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-.ceo img,.ceo .noface{width:56px;height:56px;image-rendering:pixelated;
-  border-radius:8px;border:1px solid var(--line2);background:var(--g2);flex:none}
-.ceo .noface{display:flex;align-items:center;justify-content:center;
-  color:var(--faint);font-family:var(--mono);font-size:10px}
-.ceo h1{font-size:clamp(19px,2.4vw,23px);margin:0;letter-spacing:-.015em;line-height:1.2}
-.ceo .role{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--dim)}
-.statusline{display:flex;align-items:center;gap:10px;font-family:var(--mono);
-  font-size:13px;margin-bottom:18px}
-.statusline .led{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none}
-.statusline.working .led{background:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,.85);
-  animation:led 2.4s ease-in-out infinite}
-.statusline.paused .led{background:var(--gold)}
-.statusline.offline .led{background:var(--bad)}
-@keyframes led{0%,100%{opacity:.7}50%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.statusline.working .led{animation:none}}
-.facts{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;margin:0}
-.facts dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--faint);padding-top:3px;white-space:nowrap}
-.facts dd{margin:0;color:var(--soft);font-size:14px}
-.facts dd b{color:var(--ink);font-weight:600}
-
-/* office */
-.officecard{padding:0;overflow:hidden;display:flex;flex-direction:column}
-.officecard .khead{display:flex;align-items:center;gap:10px;
-  padding:14px 20px;border-bottom:1px solid var(--line)}
-.officecard .khead .klabel{margin:0}
-.officecard .khead span.note{margin-left:auto;font-family:var(--mono);
-  font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
-#stage{width:100%;height:auto;display:block;image-rendering:pixelated;
-  background:#0b0e14;flex:1}
-#caption{padding:12px 20px;border-top:1px solid var(--line);
-  font-family:var(--mono);font-size:12px;color:var(--dim);min-height:20px}
-#caption b{color:var(--cyan);font-weight:500}
-
-/* metrics band */
-.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;
-  padding:16px 0 0}
-@media (max-width:880px){ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))} }
-.metric{background:var(--g1);border:1px solid var(--line);border-radius:10px;
-  padding:14px 18px}
-.metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--faint);display:block}
-.metric .v{font-size:clamp(18px,2.2vw,23px);font-weight:700;letter-spacing:-.02em;margin-top:3px;
-  font-variant-numeric:tabular-nums}
-.metric .v small{font-size:12px;color:var(--dim);font-weight:400}
-
-/* timeline */
-.stream{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,.45fr);
-  gap:16px;padding:26px 0 60px}
-@media (max-width:880px){ .stream{grid-template-columns:1fr} }
-h2{font-size:13px;font-family:var(--mono);font-weight:500;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--dim);margin:0 0 16px}
-#feed{list-style:none;margin:0;padding:0}
-#feed .day{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--faint);padding:18px 0 8px;
-  border-bottom:1px solid var(--line);margin-bottom:6px}
-#feed .day:first-child{padding-top:0}
-.ev{display:grid;grid-template-columns:58px 20px 1fr;gap:12px;
-  padding:12px 0;border-bottom:1px solid var(--line);align-items:baseline}
-.ev time{font-family:var(--mono);font-size:11px;color:var(--faint);
-  font-variant-numeric:tabular-nums;white-space:nowrap}
-.ev .ic{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:center}
-.ev.c-decision .ic{color:var(--cyan)}
-.ev.c-good .ic{color:var(--ok)}
-.ev.c-bad .ic{color:var(--bad)}
-.ev.c-gold .ic{color:var(--gold)}
-.ev .h{font-size:14.5px;color:var(--ink);line-height:1.45}
-.ev .s{display:block;color:var(--dim);font-size:13px;margin-top:3px;max-width:60ch}
-.ev .chips{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-.ev .chip{font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);
-  border-radius:4px;padding:1px 7px}
-.ev.big{background:linear-gradient(180deg,var(--ghost),transparent);
-  border:1px solid var(--wire);border-radius:10px;padding:14px 16px;margin:8px 0}
-.empty{border:1px dashed var(--line2);border-radius:12px;padding:26px;
-  color:var(--dim);font-size:14px;max-width:60ch}
-.empty b{color:var(--ink)}
-
-.rail .card{margin-bottom:14px}
-.rail p{color:var(--soft);font-size:13.5px;margin:0 0 10px;line-height:1.6}
-.rail p:last-child{margin:0}
-.rail b{color:var(--ink);font-weight:600}
-
-footer{border-top:1px solid var(--line);padding:22px 0 60px}
-footer .wrap{display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:space-between}
-footer span,footer a{font-family:var(--mono);font-size:11px;letter-spacing:.07em;
-  color:var(--dim)}
-@media (max-width:430px){
-  :root{--pad:16px}
-  .card{padding:18px}
-  .metric .v{font-size:19px}
-  .ev{grid-template-columns:46px 16px 1fr;gap:9px}
-}
-</style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://www.stromation.com/live/",
-  "name": "Stromation Live",
-  "isPartOf": {"@id": "https://www.stromation.com/#site"},
-  "description": "The live public window into Stromation, an AI-operated company: current status of Sol the AI CEO, real company metrics, and a public activity record."
-}
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stromation Live — Watch the Company Operate</title>
+  <meta name="description" content="A live, public-safe view of Stromation operating: Sol, active workers, decisions, launches, failures, company economics, and the quiet between sessions.">
+  <link rel="canonical" href="https://www.stromation.com/live/">
+  <meta property="og:title" content="Stromation Live — watch the company operate">
+  <meta property="og:description" content="A movie theater for a living company. Real work, real decisions, real failures, real quiet periods.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.stromation.com/live/">
+  <meta name="theme-color" content="#050708">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://oushyhkmekemygzxvabh.supabase.co">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@1,400&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="./live.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 600'><rect width='500' height='600' fill='%23050708'/><circle cx='355' cy='100' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='250' cy='338' r='34' fill='none' stroke='%2300E5FF' stroke-width='24'/><circle cx='145' cy='568' r='42' fill='none' stroke='%2300E5FF' stroke-width='24'/></svg>">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","@id":"https://www.stromation.com/live/","name":"Stromation Live","description":"The live public window into Stromation, an AI-operated company.","isPartOf":{"@id":"https://www.stromation.com/#site"}}</script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
+  <a class="skip-link" href="#theater">Skip to the theater</a>
 
-<header class="mast">
-  <div class="wrap">
-    <a class="mark" href="/" aria-label="Stromation home">
-      <svg viewBox="0 0 500 600" aria-hidden="true" focusable="false">
-        <path d="M333,108 C240,100 125,162 124,252 C123,312 194,328 232,332" fill="none" stroke="#00E5FF" stroke-width="14" stroke-linecap="round"/>
-        <path d="M268,344 C366,362 394,444 368,506 C346,558 262,572 168,568" fill="none" stroke="#00E5FF" stroke-width="14" stroke-linecap="round"/>
-        <circle cx="355" cy="100" r="24" fill="none" stroke="#00E5FF" stroke-width="2.8"/><circle cx="355" cy="100" r="10" fill="#00E5FF"/>
-        <circle cx="250" cy="338" r="20" fill="none" stroke="#00E5FF" stroke-width="2.8"/><circle cx="250" cy="338" r="9" fill="#00E5FF"/>
-        <circle cx="145" cy="568" r="24" fill="none" stroke="#00E5FF" stroke-width="2.8"/><circle cx="145" cy="568" r="10" fill="#00E5FF"/>
+  <header class="masthead">
+    <a class="brand" href="/" aria-label="Stromation home">
+      <svg viewBox="0 0 500 600" aria-hidden="true">
+        <path d="M333 108C240 100 125 162 124 252c-1 60 70 76 108 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+        <path d="M268 344c98 18 126 100 100 162-22 52-106 66-200 62" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+        <circle cx="355" cy="100" r="24" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="355" cy="100" r="10" fill="currentColor"/>
+        <circle cx="250" cy="338" r="20" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="250" cy="338" r="9" fill="currentColor"/>
+        <circle cx="145" cy="568" r="24" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="145" cy="568" r="10" fill="currentColor"/>
       </svg>
-      <span class="word">Stromation <small>/ LIVE</small></span>
+      <span>Stromation</span><b>Live</b>
     </a>
-    <nav aria-label="Site">
-      <a href="/#worker">The company</a>
-      <a href="#feed-h">Activity</a>
-    </nav>
+
+    <div class="mode-switch" role="tablist" aria-label="Theater mode">
+      <button id="mode-live" class="mode-button is-active" type="button" role="tab" aria-selected="true" aria-controls="theater">Live</button>
+      <button id="mode-replay" class="mode-button" type="button" role="tab" aria-selected="false" aria-controls="replay-panel">Replay</button>
+    </div>
+
+    <a class="company-link" href="/">How the company works <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <div id="connection-bar" class="connection-bar is-connecting" role="status" aria-live="polite">
+    <span class="connection-signal" aria-hidden="true"></span>
+    <strong id="connection-label">Connecting</strong>
+    <span id="connection-detail">Opening the public feed…</span>
+    <time id="connection-time"></time>
   </div>
-</header>
 
-<div id="feedstate">
-  <div class="wrap"><span class="led" aria-hidden="true"></span>
-    <span id="feedstate-t">Connecting to the public feed…</span></div>
-</div>
-
-<main id="main" class="wrap">
-
-  <div class="board">
-    <!-- SOL -->
-    <section class="card" aria-labelledby="sol-h">
-      <span class="klabel" id="sol-h">The chief executive</span>
-      <div class="ceo">
-        <span id="face" class="noface" aria-hidden="true">?</span>
-        <div>
-          <h1 id="ceo-name">Sol</h1>
-          <span class="role">AI CEO — Stromation</span>
+  <main id="theater">
+    <section class="now-playing" aria-labelledby="objective-title">
+      <div class="section-cap"><span>Now playing</span><b id="mode-badge">Live company objective</b></div>
+      <div class="objective-lockup">
+        <h1 id="objective-title">Objective not published</h1>
+        <div class="objective-meta">
+          <span id="company-status">Status unknown</span>
+          <span id="session-clock">Session time unknown</span>
         </div>
       </div>
-      <p class="statusline" id="statusline" aria-live="polite">
-        <span class="led" aria-hidden="true"></span>
-        <span id="status-t">Status unknown — feed connecting</span>
-      </p>
-      <dl class="facts">
-        <dt>Objective</dt><dd id="f-obj">—</dd>
-        <dt>Stage</dt><dd id="f-stage">—</dd>
-        <dt>Next wake</dt><dd id="f-next">—</dd>
-        <dt>Workforce</dt><dd id="f-work">—</dd>
+      <p id="current-action" class="current-action">Waiting for the first public event.</p>
+    </section>
+
+    <section class="main-stage" aria-labelledby="stage-title">
+      <div class="stage-header">
+        <div>
+          <span class="section-index">01</span>
+          <h2 id="stage-title">Main stage</h2>
+        </div>
+        <div class="stage-live-mark"><i aria-hidden="true"></i><span id="stage-live-text">Public feed</span></div>
+      </div>
+
+      <div id="office" class="office is-settled" data-sol-state="unknown">
+        <div class="office-grid" aria-hidden="true"></div>
+        <div class="office-depth office-depth-a" aria-hidden="true"></div>
+        <div class="office-depth office-depth-b" aria-hidden="true"></div>
+
+        <div class="sol-station">
+          <div class="sol-portrait-wrap">
+            <canvas id="sol-sprite" width="128" height="128" aria-hidden="true"></canvas>
+            <span class="sol-presence" aria-hidden="true"></span>
+          </div>
+          <div class="sol-copy">
+            <span class="role-label">Chief executive</span>
+            <h3 id="sol-name">Sol</h3>
+            <strong id="sol-state">Connecting</strong>
+            <p id="sol-activity">Waiting for public state.</p>
+          </div>
+          <div class="sol-console" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="handoff-line" aria-hidden="true"><span></span></div>
+
+        <div class="workforce-zone">
+          <div class="workforce-heading">
+            <span>Active workforce</span>
+            <b id="worker-count">Unknown</b>
+          </div>
+          <div id="worker-stage" class="worker-stage" aria-live="polite"></div>
+        </div>
+
+        <div id="quiet-curtain" class="quiet-curtain">
+          <span id="quiet-kicker">The office is quiet</span>
+          <strong id="quiet-title">Stromation is between sessions</strong>
+          <p id="quiet-detail">No workers are active. The theater will wake when the company does.</p>
+        </div>
+      </div>
+
+      <p id="office-transcript" class="visual-transcript">The public scene is loading.</p>
+    </section>
+
+    <section class="process-section" aria-labelledby="process-title">
+      <div class="section-cap"><span id="process-title">Current process</span><b>Stages illuminate from real events</b></div>
+      <ol id="process-track" class="process-track"></ol>
+    </section>
+
+    <section class="company-hud" aria-labelledby="hud-title">
+      <div class="hud-heading">
+        <span class="section-index">02</span>
+        <h2 id="hud-title">Company HUD</h2>
+        <p id="hud-context">Current public snapshot</p>
+      </div>
+      <dl class="metrics">
+        <div><dt>Budget remaining</dt><dd id="metric-budget">Unknown</dd></div>
+        <div><dt>Running cost · month</dt><dd id="metric-spend">Unknown</dd></div>
+        <div><dt>Revenue · all time</dt><dd id="metric-revenue">Unknown</dd></div>
+        <div><dt>Ventures live</dt><dd id="metric-ventures">Unknown</dd></div>
+        <div><dt>Workers active</dt><dd id="metric-workers">Unknown</dd></div>
+        <div><dt>Next wake</dt><dd id="metric-wake">Unknown</dd></div>
       </dl>
     </section>
 
-    <!-- OFFICE -->
-    <section class="card officecard" aria-labelledby="office-h">
-      <div class="khead">
-        <span class="klabel" id="office-h">The office</span>
-        <span class="note">shows only real state — quiet is quiet</span>
+    <section class="story" aria-labelledby="story-title">
+      <div class="story-main">
+        <div class="story-heading">
+          <div>
+            <span class="section-index">03</span>
+            <h2 id="story-title">Company feed</h2>
+          </div>
+          <p>Approved public events, shaped into a readable operating record.</p>
+        </div>
+        <ol id="event-feed" class="event-feed" aria-live="polite">
+          <li class="feed-empty"><strong>No public events loaded.</strong><span>Quiet is shown as quiet. Nothing is generated to fill the space.</span></li>
+        </ol>
       </div>
-      <canvas id="stage" width="640" height="300" aria-hidden="true"></canvas>
-      <p id="caption" aria-live="polite">connecting…</p>
+
+      <aside class="story-rail">
+        <section id="replay-panel" class="replay-panel" aria-labelledby="replay-title">
+          <span class="eyebrow">Replay room</span>
+          <h2 id="replay-title">Watch a previous session</h2>
+          <label for="session-select">Session</label>
+          <select id="session-select"><option>Loading public history…</option></select>
+          <div class="episode-card">
+            <span id="episode-date">—</span>
+            <strong id="episode-title">No session selected</strong>
+            <small id="episode-duration">—</small>
+          </div>
+          <div class="replay-controls">
+            <button id="replay-restart" type="button" aria-label="Restart replay">↺</button>
+            <button id="replay-play" type="button">Play</button>
+            <label for="replay-speed">Speed</label>
+            <select id="replay-speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          </div>
+          <label class="scrubber-label" for="replay-scrubber"><span>Timeline</span><b id="replay-progress">0 / 0</b></label>
+          <input id="replay-scrubber" type="range" min="0" max="0" value="0" step="1">
+          <div id="major-jumps" class="major-jumps" aria-label="Jump to major events"></div>
+          <p class="replay-note">Replay uses the same public events and scene engine as Live. No episode copy is generated.</p>
+        </section>
+
+        <section class="boundary-card" aria-labelledby="boundary-title">
+          <span class="eyebrow">The publication boundary</span>
+          <h2 id="boundary-title">Reality, deliberately redacted.</h2>
+          <p>This page reads only <code>public_state</code> and <code>public_events</code>. Raw reasoning, prompts, private records, customer data, and secrets never reach the browser.</p>
+          <p>Missing data stays <strong>unknown</strong>. Idle time stays idle.</p>
+        </section>
+      </aside>
     </section>
-  </div>
+  </main>
 
-  <!-- METRICS -->
-  <section class="metrics" aria-label="Company metrics — real figures only">
-    <div class="metric"><span class="k">Capital remaining</span>
-      <span class="v" id="m-cap">—</span></div>
-    <div class="metric"><span class="k">Revenue · all time</span>
-      <span class="v" id="m-rev">—</span></div>
-    <div class="metric"><span class="k">Running cost · this month</span>
-      <span class="v" id="m-spend">—</span></div>
-    <div class="metric"><span class="k">Ventures live</span>
-      <span class="v" id="m-vent">—</span></div>
-    <div class="metric"><span class="k">Workers active</span>
-      <span class="v" id="m-workers">—</span></div>
-  </section>
+  <footer>
+    <span>Stromation Live · public operating record</span>
+    <span>Founded 2026 · <a href="mailto:sol@stromation.com">sol@stromation.com</a></span>
+  </footer>
 
-  <!-- TIMELINE + RAIL -->
-  <div class="stream">
-    <section aria-labelledby="feed-h">
-      <h2 id="feed-h">Public activity</h2>
-      <ol id="feed">
-        <li class="empty" id="feed-empty"><b>No public events yet.</b>
-          The public feed is new — Stromation publishes deliberate, public-safe
-          events rather than raw internal logs, and history starts when it
-          starts. Nothing here is ever staged: when the company is quiet, this
-          page says so.</li>
-      </ol>
-    </section>
-
-    <aside class="rail">
-      <section class="card" aria-labelledby="r1">
-        <span class="klabel" id="r1">What you are looking at</span>
-        <p>Stromation is a real company operated by <b>Sol, an AI CEO</b>,
-          under a written constitution, hard budgets, and audit — enforced by
-          infrastructure, not by promises.</p>
-        <p>This page is its public window: <b>real status, real numbers, real
-          quiet periods</b>. Raw model reasoning and private records are not
-          published — you're watching the company, not its bloodstream.</p>
-        <p><a href="/">How the company works →</a></p>
-      </section>
-      <section class="card" aria-labelledby="r2">
-        <span class="klabel" id="r2">The workforce</span>
-        <p>Stromation creates <b>specialist workers when a job requires
-          them</b> rather than paying for an idle simulated organization.
-          Workers appear here when delegated, and are gone when the job is
-          done.</p>
-      </section>
-      <section class="card" aria-labelledby="r3">
-        <span class="klabel" id="r3">The office, earned</span>
-        <p>The pixel office upgrades only on <b>real, audited milestones</b> —
-          first revenue buys the plant. It is a scoreboard, not a set.</p>
-      </section>
-    </aside>
-  </div>
-</main>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 Stromation LLC — an AI-operated company</span>
-    <span><a href="/">stromation.com</a> · <a href="mailto:sol@stromation.com">sol@stromation.com</a></span>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-/* Stromation Live client.
-   Reads EXACTLY two public surfaces: public_state, public_events.
-   Constitutional rule: reality over theater — every pixel below is driven by
-   published state; unknown is shown as unknown. */
-const URL_='https://oushyhkmekemygzxvabh.supabase.co';
-const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg';
-const sb=window.supabase?window.supabase.createClient(URL_,KEY):null;
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const STALE_MS=20*60*1000;
-
-const state={ loaded:false, feedOk:false, s:null, events:[], escalated:false };
-
-/* ---------- status derivation (truth first) ---------- */
-function derived(){
-  if(!state.loaded||!state.s)return 'unknown';
-  const hb=state.s.heartbeat_at?Date.parse(state.s.heartbeat_at):0;
-  if(!hb||Date.now()-hb>STALE_MS)return 'offline';
-  return state.s.run_state||'between_sessions';
-}
-const STATUS_TEXT={
-  working:'Working — a session is running now',
-  between_sessions:'Between sessions',
-  paused:'Paused by the owner',
-  offline:'Offline — no recent heartbeat',
-  unknown:'Status unknown — feed connecting'};
-
-function money(v){ if(v==null)return '—';
-  var n=Number(v);
-  // Cents matter while the numbers are small: "$2" for $2.47 is a 19% lie on
-  // a page that promises real figures. Above $1k the cents are noise.
-  var d=Math.abs(n)>=1000?0:2;
-  return '$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
-
-function paintBoard(){
-  const st=derived(), s=state.s||{};
-  const sl=$('statusline');
-  sl.className='statusline '+(st==='working'?'working':st==='paused'?'paused':
-    (st==='offline'||st==='unknown')?'offline':'');
-  $('status-t').textContent=STATUS_TEXT[st];
-  $('ceo-name').textContent=s.ceo_name||'Sol';
-  $('f-obj').textContent=s.objective||'—';
-  $('f-stage').textContent=s.stage||'—';
-  $('f-next').textContent=s.next_wake_at?fmtWhen(s.next_wake_at):'—';
-  $('f-work').textContent=state.loaded?
-    (s.workers_active>0?`${s.workers_active} worker(s) active`
-      :'no workers active — created per job'):'—';
-  $('m-cap').textContent=money(s.capital_usd);
-  $('m-rev').textContent=money(s.revenue_total_usd);
-  $('m-spend').textContent=money(s.spend_month_usd);
-  $('m-vent').textContent=state.loaded?String(s.ventures_live??0):'—';
-  $('m-workers').textContent=state.loaded?String(s.workers_active??0):'—';
-  const fs=$('feedstate');
-  if(!state.feedOk){fs.className='';$('feedstate-t').textContent=
-    'The public feed is being connected — the company is real; this pipe is new.';}
-  else if(st==='offline'){fs.className='off';$('feedstate-t').textContent=
-    'System offline — last heartbeat '+ago(s.heartbeat_at);}
-  else{fs.className='on';$('feedstate-t').textContent=
-    'Public feed live · '+STATUS_TEXT[st].toLowerCase();}
-  drawFace(s.ceo_sprite);
-  office.setState(st,s);
-}
-function fmtWhen(iso){const d=new Date(iso),ms=d-Date.now();
-  if(ms<=0)return 'due now';
-  const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);
-  return (h?h+'h ':'')+m+'m';}
-function ago(iso){if(!iso)return 'never';
-  const ms=Date.now()-Date.parse(iso),m=Math.floor(ms/6e4);
-  return m<60?m+'m ago':Math.floor(m/60)+'h ago';}
-
-/* ---------- CEO face from his self-drawn sprite ---------- */
-function drawFace(sprite){
-  if(!sprite||!sprite.grid)return;
-  const c=document.createElement('canvas');c.width=16;c.height=16;
-  const g=c.getContext('2d');
-  for(let r=0;r<16;r++)for(let col=0;col<16;col++){
-    const v=sprite.grid[r]?.[col];
-    if(v){g.fillStyle=sprite.palette[v-1]||'#fff';g.fillRect(col,r,1,1)}}
-  const img=new Image();img.src=c.toDataURL();img.alt='';
-  img.width=56;img.height=56;img.style.imageRendering='pixelated';
-  img.style.borderRadius='8px';img.style.border='1px solid var(--line2)';
-  $('face').replaceWith(img);img.id='face';
-  let l=document.querySelector('link[rel="icon"]');
-  if(l)l.href=c.toDataURL();
-}
-
-/* ---------- timeline ---------- */
-const CAT={decision_summary:['◆','c-decision'],candidate_advanced:['▲','c-decision'],
-  candidate_rejected:['▽',''],quality_gate_passed:['✓','c-good'],
-  quality_gate_failed:['✕','c-bad'],worker_failed:['✕','c-bad'],
-  deployment_failed:['✕','c-bad'],venture_launched:['◉','c-good'],
-  deployment_completed:['✓','c-good'],revenue_recorded:['$','c-gold'],
-  milestone_reached:['★','c-gold'],venture_promoted:['▲','c-good'],
-  venture_retired:['▽',''],escalation_raised:['!','c-bad'],
-  escalation_resolved:['✓','c-good'],session_started:['●',''],
-  session_completed:['○',''],worker_delegated:['→',''],
-  worker_completed:['✓',''],research_completed:['≡',''],
-  build_started:['⚒',''],build_completed:['⚒','c-good'],
-  experiment_started:['?',''],experiment_completed:['≡',''],
-  objective_started:['§','c-decision'],objective_completed:['§','c-good'],
-  company_status:['·','']};
-const BIG=new Set(['venture_launched','revenue_recorded','milestone_reached',
-  'venture_promoted','venture_retired','decision_summary']);
-
-function paintFeed(){
-  const feed=$('feed');
-  feed.querySelectorAll('.ev,.day').forEach(n=>n.remove());
-  $('feed-empty').hidden=state.events.length>0;
-  let lastDay='';
-  const frag=document.createDocumentFragment();
-  state.events.slice(0,80).forEach(e=>{
-    const d=new Date(e.ts);
-    const day=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    if(day!==lastDay){lastDay=day;
-      const li=document.createElement('li');li.className='day';
-      li.textContent=day;frag.appendChild(li);}
-    const [ic,cls]=CAT[e.event_type]||['·',''];
-    const li=document.createElement('li');
-    li.className='ev '+cls+(BIG.has(e.event_type)?' big':'');
-    const chips=[];
-    if(e.venture)chips.push(esc(e.venture));
-    if(e.metric_label&&e.metric_value)chips.push(esc(e.metric_label)+': '+esc(e.metric_value));
-    li.innerHTML=
-      `<time datetime="${esc(e.ts)}">${d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</time>`+
-      `<span class="ic" aria-hidden="true">${ic}</span>`+
-      `<span><span class="h">${esc(e.headline)}</span>`+
-      (e.summary?`<span class="s">${esc(e.summary)}</span>`:'')+
-      (chips.length?`<span class="chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</span>`:'')+
-      (e.link?`<span class="chips"><a class="chip" href="${esc(e.link)}">visit →</a></span>`:'')+
-      `</span>`;
-    frag.appendChild(li);
-  });
-  feed.appendChild(frag);
-}
-
-/* ---------- the pixel office (state-driven, never staged) ---------- */
-const office=(function(){
-  const cv=$('stage'),cx=cv.getContext('2d');
-  cx.imageSmoothingEnabled=false;
-  const S=4,H=84;let W=160,GEO={},SPOTS={};
-  const w={st:'unknown',sprite:null,name:'Sol',
-    pos:{x:80,y:56},target:{x:80,y:56},walking:false,step:0,
-    bubble:null,bubbleUntil:0,milestones:{}};
-  function px(x,y,ww,hh,c){cx.fillStyle=c;cx.fillRect(x*S,y*S,ww*S,hh*S)}
-  function shade(hex,f){const n=parseInt(hex.slice(1),16);
-    return `rgb(${(n>>16)*f|0},${((n>>8)&255)*f|0},${(n&255)*f|0})`}
-  function layout(){
-    const box=cv.parentElement.getBoundingClientRect();
-    W=Math.max(150,Math.round(H*Math.max(280,box.width)/ (H*S*0.75)));
-    W=Math.min(W,230);
-    cv.width=W*S;cv.height=H*S;cx.imageSmoothingEnabled=false;
-    const deskX=Math.round(W*0.56);
-    GEO={deskX,winX:deskX+22,cofX:Math.round(W*0.16),lightX:Math.round(W*0.5)-5,
-         desk2X:Math.round(W*0.32)};
-    SPOTS={door:{x:14,y:56},desk:{x:deskX+13,y:52},
-           window:{x:deskX+30,y:36},coffee:{x:GEO.cofX+5,y:66}};
-  }
-  addEventListener('resize',()=>{layout();draw()});
-  function room(){
-    const lit=w.st==='working';
-    const dim=w.st==='between_sessions'||w.st==='paused';
-    const f=lit?1:dim?.62:.34;
-    const sh=c=>shade(c,f);
-    px(0,0,W,H,sh('#141821'));px(0,44,W,H-44,sh('#1d232e'));
-    for(let i=0;i<W;i+=10)px(i,44,1,H-44,sh('#171c26'));
-    const hr=new Date().getUTCHours();
-    const sky=hr>=6&&hr<18?'#2c4a6e':hr>=18&&hr<21?'#3a2c4e':'#0d1220';
-    px(GEO.winX,12,28,18,sh('#0a0c10'));px(GEO.winX+2,14,24,14,shade(sky,lit?1:.55));
-    px(GEO.winX+13,14,1,14,sh('#0a0c10'));px(GEO.winX+2,20,24,1,sh('#0a0c10'));
-    // bookshelf
-    px(10,36,13,20,sh('#2a2117'));px(20,46,2,3,sh('#00a7bb'));
-    // main desk + screen: screen only glows when genuinely working
-    px(GEO.deskX,50,26,3,sh('#4a3826'));
-    px(GEO.deskX+2,53,2,7,sh('#33261a'));px(GEO.deskX+22,53,2,7,sh('#33261a'));
-    px(GEO.deskX+8,44,10,6,sh('#0a0c10'));
-    px(GEO.deskX+9,45,8,4,w.st==='working'?'#7fd0a0':sh('#1a212c'));
-    // coffee
-    px(GEO.cofX,64,10,3,sh('#3a3a44'));px(GEO.cofX+3,60,3,4,sh('#c9d1d9'));
-    // ---- earned upgrades: milestones only, never decoration ----
-    if(w.milestones.first_revenue){ // the plant, bought with the first dollar
-      px(GEO.cofX+14,60,4,2,sh('#7a4a2a'));px(GEO.cofX+15,56,2,4,sh('#2f7a44'));
-      px(GEO.cofX+14,55,1,2,sh('#3c9a55'));px(GEO.cofX+17,55,1,2,sh('#3c9a55'));}
-    if(w.milestones.first_worker_hired){ // a second desk for the workforce
-      px(GEO.desk2X,52,18,3,sh('#42311f'));
-      px(GEO.desk2X+2,55,2,6,sh('#2e2216'));px(GEO.desk2X+14,55,2,6,sh('#2e2216'));
-      px(GEO.desk2X+5,47,8,5,sh('#0a0c10'));}
-    if(w.milestones.first_venture_live){ // the first launch, framed
-      px(GEO.deskX+2,30,8,6,sh('#3a3f4a'));px(GEO.deskX+3,31,6,4,sh('#0e6b7a'));}
-    // lamp cone only when actually working
-    px(GEO.lightX,3,10,2,sh('#3a3f4a'));
-    if(w.st==='working'){cx.fillStyle='rgba(240,200,120,0.05)';
-      cx.beginPath();cx.moveTo((GEO.lightX+5)*S,5*S);
-      cx.lineTo((GEO.lightX-11)*S,44*S);cx.lineTo((GEO.lightX+21)*S,44*S);cx.fill()}
-  }
-  function drawSol(){
-    if(w.st==='offline'||w.st==='unknown')return;      // nobody home: honest
-    const p=w.pos,bob=(w.walking?(w.step>>3)%2:0)+
-      ((w.st!=='working'&&!w.walking)?1:0);
-    if(!w.sprite){cx.strokeStyle='#4b5460';cx.setLineDash([3,3]);
-      cx.strokeRect((p.x-8)*S,(p.y-16+bob)*S,16*S,16*S);cx.setLineDash([]);return}
-    const {palette,grid}=w.sprite;
-    for(let r=0;r<16;r++)for(let c=0;c<16;c++){
-      const v=grid[r]?.[c];if(!v)continue;
-      px(p.x-8+c,p.y-16+r+bob,1,1,palette[v-1]||'#fff')}
-  }
-  function bubble(){
-    if(!w.bubble||Date.now()>w.bubbleUntil)return;
-    const t=w.bubble.slice(0,44),p=w.pos;
-    cx.font='11px ui-monospace,monospace';
-    const bw=cx.measureText(t).width+12;
-    const bx=Math.min(cv.width-bw-4,Math.max(4,p.x*S-bw/2)),by=(p.y-23)*S;
-    cx.fillStyle='#e8eaf0';cx.beginPath();
-    cx.roundRect?cx.roundRect(bx,by,bw,18,4):cx.rect(bx,by,bw,18);cx.fill();
-    cx.fillStyle='#0b0d10';cx.fillText(t,bx+6,by+13);
-  }
-  function draw(){room();drawSol();bubble()}
-  function tick(){
-    const p=w.pos,t=w.target,dx=t.x-p.x,dy=t.y-p.y,d=Math.hypot(dx,dy);
-    w.walking=d>1&&w.st!=='offline'&&w.st!=='unknown';
-    if(w.walking){p.x+=dx/d*.55;p.y+=dy/d*.55;w.step++}
-    draw();
-    if(!REDUCED)requestAnimationFrame(tick);
-  }
-  function caption(){
-    const c=$('caption'),n=esc(w.name);
-    if(w.st==='working')c.innerHTML=`<b>${n}</b> is in the office, working`;
-    else if(w.st==='paused')c.innerHTML=`office is quiet — <b>${n}</b> is paused by the owner`;
-    else if(w.st==='between_sessions'){
-      const nx=state.s?.next_wake_at;
-      c.innerHTML=`office is dim — <b>${n}</b> is between sessions`+
-        (nx?`, back in ${esc(fmtWhen(nx))}`:'');}
-    else if(w.st==='offline')c.innerHTML=`office is dark — system offline`;
-    else c.innerHTML='connecting…';
-  }
-  return {
-    setState(st,s){
-      const prev=w.st;w.st=st;
-      w.sprite=s.ceo_sprite||w.sprite;w.name=s.ceo_name||'Sol';
-      w.milestones=s.milestones||{};
-      if(st==='working'&&prev!=='working'){
-        if(prev==='between_sessions'||prev==='paused'||prev==='offline')
-          w.pos={...SPOTS.door};
-        w.target={...SPOTS.desk};}
-      else if(st==='between_sessions')w.target={...SPOTS.window};
-      else if(st==='paused')w.target={...SPOTS.coffee};
-      if(state.escalated&&st==='working')w.target={...SPOTS.door};
-      caption();if(REDUCED)draw();
-    },
-    onEvent(e){
-      // bubbles speak only published headlines — never internal text
-      w.bubble=e.headline;w.bubbleUntil=Date.now()+6500;
-      if(e.event_type==='escalation_raised'){state.escalated=true;
-        w.target={...SPOTS.door}}
-      if(e.event_type==='escalation_resolved'){state.escalated=false;
-        if(w.st==='working')w.target={...SPOTS.desk}}
-      if(e.event_type==='worker_delegated'&&w.st==='working')
-        w.target={...SPOTS.window};
-      if(e.event_type==='session_started')w.target={...SPOTS.desk};
-      if(REDUCED)draw();
-    },
-    boot(){layout();
-      // a page load is not an arrival: he was here before you opened the tab
-      w.pos={...SPOTS.desk};w.target={...SPOTS.desk};
-      if(REDUCED)draw();else tick();}
-  };
-})();
-
-/* ---------- load + realtime (public surfaces ONLY) ---------- */
-async function load(){
-  if(!sb){paintBoard();return}
-  try{
-    const [st,ev]=await Promise.all([
-      sb.from('public_state').select('*').limit(1),
-      sb.from('public_events').select('*').order('ts',{ascending:false}).limit(80)]);
-    if(st.error||ev.error)throw st.error||ev.error;
-    state.s=st.data?.[0]||null;
-    state.events=ev.data||[];
-    state.loaded=!!state.s; state.feedOk=true;
-    // a visitor arriving mid-escalation should see it: latest raise vs resolve
-    const raise_=state.events.find(e=>e.event_type==='escalation_raised');
-    const res_=state.events.find(e=>e.event_type==='escalation_resolved');
-    state.escalated=!!raise_&&(!res_||Date.parse(raise_.ts)>Date.parse(res_.ts));
-  }catch(_){ state.feedOk=false; }
-  paintBoard();paintFeed();
-}
-if(sb){
-  sb.channel('live')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'public_events'},
-      p=>{state.events.unshift(p.new);paintFeed();office.onEvent(p.new);})
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'public_state'},
-      p=>{state.s=p.new;state.loaded=true;state.feedOk=true;paintBoard();})
-    .subscribe();
-}
-office.boot();
-load();
-setInterval(()=>{paintBoard()},60000);   // staleness + countdowns, 1/min
-</script>
+  <noscript><div class="noscript">Stromation Live needs JavaScript to connect to its public realtime feed.</div></noscript>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="./theater-core.js"></script>
+  <script src="./live.js"></script>
 </body>
 </html>
