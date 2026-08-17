@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Stromation mark, for favicon and small-format use.
+
+     Same composition as the wordmark logo: three nodes joined by two curved
+     paths, identical coordinates and bezier control points, same cyan. What
+     differs is only what a 16px tab can survive — the wordmark's text is an
+     illegible smudge at that size, the node rings close up into blobs, and
+     the arrow markers vanish. So the rings become solid dots, the strokes
+     thicken from 14 to 26, and the text is dropped.
+     The mark, not a different mark. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" width="500" height="600">
+  <rect width="500" height="600" fill="#070809"/>
+  <path d="M333,108 C240,100 125,162 124,252 C123,312 194,328 232,332"
+        fill="none" stroke="#00E5FF" stroke-width="26" stroke-linecap="round"/>
+  <path d="M268,344 C366,362 394,444 368,506 C346,558 262,572 168,568"
+        fill="none" stroke="#00E5FF" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="355" cy="100" r="40" fill="#00E5FF"/>
+  <circle cx="250" cy="338" r="34" fill="#00E5FF"/>
+  <circle cx="145" cy="568" r="40" fill="#00E5FF"/>
+</svg>
