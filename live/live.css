@@ -88,14 +88,17 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad) 90px; }
 .section-cap b { color: var(--faint); font-weight: 400; }
 
 .now-playing { padding: clamp(30px, 5vw, 70px) 0 clamp(26px, 4vw, 50px); border-bottom: 1px solid var(--line); }
-.objective-lockup { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 34px; align-items: end; margin-top: 18px; }
-.objective-lockup h1 {
+.live-title-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 34px; align-items: end; margin-top: 18px; }
+.live-title-row h1 {
   margin: 0; max-width: 1000px; font-size: clamp(30px, 4.2vw, 68px); line-height: 1.01;
   letter-spacing: -.042em; font-weight: 600; text-wrap: balance;
 }
 .objective-meta { display: grid; gap: 7px; min-width: 210px; padding-bottom: 7px; }
 .objective-meta span { color: var(--dim); font-family: var(--mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
 .objective-meta span:first-child { color: var(--paper); }
+.objective-block { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--line); }
+.objective-label { display: block; margin-bottom: 9px; color: var(--cyan); font-family: var(--mono); font-size: 9px; letter-spacing: .17em; text-transform: uppercase; }
+.objective-block h2 { max-width: 920px; font-family: var(--sans); font-size: clamp(24px, 3vw, 42px); line-height: 1.08; letter-spacing: -.03em; text-transform: none; text-wrap: balance; }
 .current-action {
   margin: 26px 0 0; padding-left: 18px; border-left: 1px solid var(--cyan-dim);
   color: var(--soft); font-family: var(--serif); font-style: italic; font-size: clamp(15px, 1.5vw, 19px);
@@ -259,7 +262,7 @@ footer a { color: var(--dim); }
   .mode-switch { justify-self: end; }
   .connection-bar #connection-detail { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .connection-bar time { display: none; }
-  .objective-lockup { grid-template-columns: 1fr; gap: 16px; }
+  .live-title-row { grid-template-columns: 1fr; gap: 16px; }
   .objective-meta { min-width: 0; grid-template-columns: 1fr 1fr; }
   .office { min-height: 0; display: block; }
   .sol-station { min-height: 380px; border-right: 0; border-bottom: 1px solid var(--line); grid-template-columns: 100px 1fr; align-items: center; align-content: center; column-gap: 22px; }
@@ -282,7 +285,7 @@ footer a { color: var(--dim); }
   .mode-button { padding: 7px 12px; }
   .connection-bar { align-items: flex-start; flex-wrap: wrap; gap: 6px 9px; }
   .connection-bar #connection-detail { width: calc(100% - 20px); margin-left: 15px; }
-  .objective-lockup h1 { font-size: clamp(28px, 9vw, 42px); }
+  .live-title-row h1 { font-size: clamp(28px, 9vw, 42px); }
   .objective-meta { grid-template-columns: 1fr; }
   .stage-header { align-items: center; }
   .stage-live-mark { display: none; }

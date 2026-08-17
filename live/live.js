@@ -371,9 +371,9 @@
 
   function updateEpisodeCard() {
     const session = app.selectedSession;
-    el("episode-date").textContent = session ? longDate(session.startedAt) : "—";
+    el("episode-date").textContent = session ? longDate(session.startedAt) : "Unknown";
     el("episode-title").textContent = session ? session.title : "No session selected";
-    el("episode-duration").textContent = session ? duration(session.durationMs) : "—";
+    el("episode-duration").textContent = session ? duration(session.durationMs) : "Unknown";
   }
 
   function renderMajorJumps() {
