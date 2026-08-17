@@ -324,6 +324,34 @@ footer a:hover{color:var(--cyan)}
   ]
 }
 </script>
+<!-- GA4: one property for all Stromation ventures; hostname is
+     the venture. Excludes our own machines (webdriver), marks synthetic
+     checks (?stro_verify=1) as internal traffic, and coexists with the
+     GoatCounter beacon: two independent ledgers, one page_view each. -->
+<script>
+(function () {
+  var verify = /[?&]stro_verify=1/.test(location.search);
+  if (navigator.webdriver && !verify) return;
+  var s = document.createElement('script'); s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-0VDWHMS6MW';
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-0VDWHMS6MW', verify ? {'traffic_type': 'internal'} : {});
+  /* Product interaction, generically: any venture that gives its core
+     feature id="calculator" gets a calculator_used event, once per page
+     load, for free. Harmless where the id does not exist. */
+  var sent = false;
+  document.addEventListener('input', function (e) {
+    if (sent || verify || !e.target || !e.target.closest) return;
+    if (e.target.closest('#calculator')) {
+      sent = true; gtag('event', 'calculator_used');
+    }
+  }, true);
+})();
+</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
