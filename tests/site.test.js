@@ -138,3 +138,39 @@ test("early access uses the approved FormSubmit intake and discloses it", () => 
   assert.match(privacy, /FormSubmit/);
   assert.match(privacy, /retains form submissions for 30 days/i);
 });
+
+test("favicon links end cleanly — no stray markup after them", () => {
+  for (const route of routes) {
+    const html = readRoute(route);
+    // any favicon link must be immediately followed by a tag open or
+    // whitespace, never by leftover SVG fragments or a dangling quote
+    for (const m of html.matchAll(/rel="icon"[^>]*>([^\n<]{0,80})/gi)) {
+      assert.equal(m[1].trim(), "", `${route} has stray markup after the favicon: ${m[1].slice(0, 60)}`);
+    }
+    assert.doesNotMatch(html, /svg\+xml"><rect/i, `${route} stray svg fragment`);
+  }
+});
+
+test("standard pages share the canonical navigation and CTA", () => {
+  const standard = routes.filter((r) => r !== "/live/");
+  for (const route of standard) {
+    const html = readRoute(route);
+    const nav = html.match(/<nav[^>]*(?:site-nav|home-nav)[^>]*>([\s\S]*?)<\/nav>/i);
+    assert.ok(nav, `${route} has no primary nav`);
+    for (const [label, href] of [["Home", "/"], ["AI Employees", "/workers/"],
+        ["Custom", "/custom/"], ["How It Works", "/how-it-works/"],
+        ["Live", "/live/"]]) {
+      assert.match(nav[1], new RegExp(`href="${href}"[^>]*>${label}<`),
+        `${route} nav missing ${label}`);
+    }
+    assert.match(nav[1], /href="\/\?intent=operations#contact">Start the pilot</,
+      `${route} nav CTA drifted`);
+  }
+});
+
+test("Live keeps its Live-specific controls and route home", () => {
+  const html = readRoute("/live/");
+  assert.match(html, /id="mode-live"/);
+  assert.match(html, /id="mode-replay"/);
+  assert.match(html, /class="brand" href="\/"/);
+});
