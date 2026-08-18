@@ -5,10 +5,11 @@ The static public site for Stromation and its realtime company theater.
 ## Public routes
 
 - `/` company and offer overview
-- `/workers/` AI worker catalog
-- `/growth-operator/` Growth Operator founding pilot
-- `/custom/` custom AI worker builds
-- `/how-it-works/` worker lifecycle and authority model
+- `/operations-employee/` the flagship AI Operations Employee offer
+- `/workers/` AI employee catalog (Operations available now; future roles labeled not yet available)
+- `/growth-operator/` retired — redirects to `/operations-employee/`
+- `/custom/` Custom AI Employee (fallback offer)
+- `/how-it-works/` employee lifecycle and authority model
 - `/live/` realtime public operating record
 - `/privacy/`, `/terms/`, `/technology/`, and `/governance/`
 
