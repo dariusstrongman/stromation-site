@@ -24,3 +24,5 @@ node --test tests/*.test.js
 ```
 
 GitHub Pages serves production from `main`.
+
+Pull requests to `main` are reviewed by the Gatekeeper and gated on the `site-tests` check.
