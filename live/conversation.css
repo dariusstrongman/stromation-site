@@ -1,0 +1,162 @@
+.conversation-section {
+  padding: clamp(34px, 5vw, 66px) 0 0;
+}
+
+.conversation-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.conversation-heading > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 13px;
+}
+
+.conversation-heading p {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--dim);
+  font-size: 12px;
+  text-align: right;
+}
+
+.conversation-shell {
+  border: 1px solid var(--line-bright);
+  background: var(--ink-0);
+  min-height: 180px;
+}
+
+.conversation-empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  padding: 34px;
+  text-align: center;
+  color: var(--faint);
+}
+
+.conversation-empty strong {
+  display: block;
+  color: var(--dim);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
+
+.conversation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.conversation-thread {
+  display: grid;
+  grid-template-columns: minmax(120px, .28fr) minmax(0, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.conversation-thread:last-child {
+  border-bottom: 0;
+}
+
+.conversation-speaker {
+  padding: 18px;
+  border-right: 1px solid var(--line);
+  background: rgba(9, 12, 14, .72);
+}
+
+.conversation-speaker strong {
+  display: block;
+  color: var(--paper);
+  font-size: 13px;
+}
+
+.conversation-speaker span {
+  display: block;
+  margin-top: 5px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.conversation-copy {
+  padding: 18px 20px;
+  min-width: 0;
+}
+
+.conversation-copy p {
+  margin: 0;
+  color: var(--soft);
+  font-size: 13px;
+  line-height: 1.58;
+}
+
+.conversation-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 10px;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.conversation-thread[data-kind="handoff"] .conversation-speaker,
+.conversation-thread[data-kind="sol"] .conversation-speaker {
+  box-shadow: inset 2px 0 0 var(--cyan-dim);
+}
+
+.conversation-thread[data-kind="worker"] .conversation-speaker {
+  box-shadow: inset 2px 0 0 var(--good);
+}
+
+.conversation-thread[data-kind="failure"] .conversation-speaker {
+  box-shadow: inset 2px 0 0 var(--bad);
+}
+
+.conversation-proof {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.conversation-proof::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+@media (max-width: 760px) {
+  .conversation-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .conversation-heading p {
+    text-align: left;
+  }
+
+  .conversation-thread {
+    grid-template-columns: 1fr;
+  }
+
+  .conversation-speaker {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
