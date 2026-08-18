@@ -55,31 +55,31 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
 [hidden]{display:none!important}
 
 /* ── masthead ─────────────────────────────────────────────── */
-.mast{position:sticky;top:0;z-index:50;background:rgba(7,8,9,.86);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line)}
-.mast .wrap{display:flex;align-items:center;gap:14px;height:64px}
-.mark{display:flex;align-items:center;gap:11px;color:var(--ink)}
-.mark:hover{text-decoration:none}
-.mark svg{width:22px;height:26px;flex:none;display:block}
-.word{font-family:var(--mono);font-weight:500;font-size:13px;
-  letter-spacing:.32em;text-transform:uppercase}
-nav[aria-label="Sections"]{margin-left:auto;display:flex;gap:22px}
-nav[aria-label="Sections"] a{font-family:var(--mono);font-size:11.5px;
-  letter-spacing:.09em;text-transform:uppercase;color:var(--dim);padding:6px 0}
-nav[aria-label="Sections"] a:hover{color:var(--cyan);text-decoration:none}
-.home-nav-toggle{display:none;margin-left:auto;padding:8px 11px;border:1px solid var(--line2);
-  border-radius:4px;background:transparent;color:var(--ink);font:500 11px var(--mono);
-  letter-spacing:.12em;text-transform:uppercase}
+.site-header{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
+  background:rgba(7,8,9,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.site-header .wrap{min-height:68px;display:flex;align-items:center;gap:24px}
+.brand{display:inline-flex;align-items:center;gap:12px;color:var(--ink);text-decoration:none}
+.brand:hover{color:var(--ink);text-decoration:none}
+.brand svg{width:22px;height:28px;color:var(--cyan);flex:none}
+.brand span{font:500 13px/1 var(--mono);letter-spacing:.28em;text-transform:uppercase}
+.site-nav{margin-left:auto;display:flex;align-items:center;gap:clamp(14px,2.1vw,27px)}
+.site-nav a{color:var(--dim);font:500 10px/1 var(--mono);letter-spacing:.09em;
+  text-decoration:none;text-transform:uppercase;white-space:nowrap}
+.site-nav a:hover,.site-nav a[aria-current="page"]{color:var(--cyan);text-decoration:none}
+.site-nav .nav-cta{padding:10px 13px;color:var(--bg);background:var(--cyan);border-radius:4px}
+.site-nav .nav-cta:hover{color:var(--bg);background:var(--cyan-press)}
+.nav-toggle{display:none;margin-left:auto;color:var(--ink);background:transparent;
+  border:1px solid var(--line2);border-radius:4px;padding:8px 12px;
+  font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
 @media (max-width:840px){
-  .mast .wrap{position:relative}
-  .home-nav-toggle{display:inline-flex}
-  nav[aria-label="Sections"]{display:none;position:absolute;top:100%;left:var(--pad);right:var(--pad);
-    margin:0;padding:10px;background:var(--g1);border:1px solid var(--line2);
-    box-shadow:0 20px 45px rgba(0,0,0,.45)}
-  nav[aria-label="Sections"].is-open{display:grid}
-  nav[aria-label="Sections"] a,nav[aria-label="Sections"] a:not(.keep){display:block;padding:11px 12px}
-  nav[aria-label="Sections"] .keep{border-top:1px solid var(--line)}
+  .site-header .wrap{position:relative}
+  .nav-toggle{display:inline-flex}
+  .site-nav{display:none;position:absolute;inset:68px 0 auto;margin:0;
+    padding:20px var(--pad) 24px;flex-direction:column;align-items:stretch;gap:0;
+    background:var(--g1);border-bottom:1px solid var(--line2)}
+  .site-nav.is-open{display:flex}
+  .site-nav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:11px}
+  .site-nav .nav-cta{margin-top:14px;padding:14px;text-align:center;border:0}
 }
 
 /* the truthful status strip: instrument, not theater */
@@ -315,8 +315,7 @@ footer span, footer a{font-family:var(--mono);font-size:11px;letter-spacing:.08e
 footer a:hover{color:var(--cyan)}
 
 @media (max-width:430px){
-  :root{--pad:18px}
-  .mast .wrap{height:58px}
+  .site-header .wrap{min-height:58px}
   .btn{padding:11px 16px;font-size:12.5px;width:100%;justify-content:center}
   .cta-row{flex-direction:column;align-items:stretch}
   .panel{padding:20px}
@@ -382,34 +381,20 @@ footer a:hover{color:var(--cyan)}
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="mast">
+<header class="site-header">
   <div class="wrap">
-    <a class="mark" href="/" aria-label="Stromation home">
-      <svg viewBox="0 0 500 600" aria-hidden="true" focusable="false">
-        <defs><marker id="mA" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="4"
-          markerHeight="4" orient="auto"><path d="M2 2L10 6L2 10" fill="none"
-          stroke="#00E5FF" stroke-width="2" stroke-linecap="round"/></marker></defs>
-        <path d="M333,108 C240,100 125,162 124,252 C123,312 194,328 232,332" fill="none"
-          stroke="#00E5FF" stroke-width="14" stroke-linecap="round" marker-end="url(#mA)"/>
-        <path d="M268,344 C366,362 394,444 368,506 C346,558 262,572 168,568" fill="none"
-          stroke="#00E5FF" stroke-width="14" stroke-linecap="round" marker-end="url(#mA)"/>
-        <circle cx="355" cy="100" r="24" fill="none" stroke="#00E5FF" stroke-width="2.8"/>
-        <circle cx="355" cy="100" r="10" fill="#00E5FF"/>
-        <circle cx="250" cy="338" r="20" fill="none" stroke="#00E5FF" stroke-width="2.8"/>
-        <circle cx="250" cy="338" r="9" fill="#00E5FF"/>
-        <circle cx="145" cy="568" r="24" fill="none" stroke="#00E5FF" stroke-width="2.8"/>
-        <circle cx="145" cy="568" r="10" fill="#00E5FF"/>
-      </svg>
-      <span class="word">Stromation</span>
+    <a class="brand" href="/" aria-label="Stromation home">
+      <svg viewBox="0 0 24 30" aria-hidden="true" focusable="false"><path d="M18 3C11 3 5 7 5 12c0 4 4 5 7 5M12 17c6 1 8 5 7 8-2 3-7 3-13 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="3" r="2" fill="currentColor"/><circle cx="12" cy="17" r="2" fill="currentColor"/><circle cx="5" cy="27" r="2" fill="currentColor"/></svg>
+      <span>Stromation</span>
     </a>
-    <button class="home-nav-toggle" type="button" aria-expanded="false" aria-controls="home-nav">Menu</button>
-    <nav id="home-nav" aria-label="Sections">
-      <a href="/">Home</a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+      <a href="/" aria-current="page">Home</a>
       <a href="/workers/">AI Employees</a>
       <a href="/custom/">Custom</a>
       <a href="/how-it-works/">How It Works</a>
       <a href="/live/">Live</a>
-      <a class="keep" href="/?intent=operations#contact">Start the pilot</a>
+      <a class="nav-cta" href="/?intent=operations#contact">Start the pilot</a>
     </nav>
   </div>
 </header>
@@ -932,19 +917,6 @@ footer a:hover{color:var(--cyan)}
 
 <script>
 (function(){
-  var navToggle = document.querySelector('.home-nav-toggle');
-  var homeNav = document.querySelector('#home-nav');
-  if (navToggle && homeNav) {
-    navToggle.addEventListener('click', function () {
-      var open = homeNav.classList.toggle('is-open');
-      navToggle.setAttribute('aria-expanded', String(open));
-    });
-    homeNav.addEventListener('click', function (event) {
-      if (!event.target.closest('a')) return;
-      homeNav.classList.remove('is-open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    });
-  }
   var m = window.matchMedia("(prefers-reduced-motion: reduce)");
   var els = document.querySelectorAll(".rise");
   if (m.matches || !("IntersectionObserver" in window)) {
