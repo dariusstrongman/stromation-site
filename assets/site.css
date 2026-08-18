@@ -246,6 +246,12 @@ p { margin: 0 0 16px; }
   .job-grid div { border-right: 0; }
 }
 
+/* FAQ */
+.faq-list { list-style: none; margin: 0; padding: 0; }
+.faq-item { border-top: 1px solid var(--line); padding: 22px 0; }
+.faq-list dt { font: 500 16px/1.5 var(--sans); color: var(--text); margin-bottom: 8px; }
+.faq-list dd { margin: 0; color: var(--dim); line-height: 1.65; max-width: 640px; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .rise { opacity: 1; transform: none; transition: none; }
