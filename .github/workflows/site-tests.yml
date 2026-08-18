@@ -1,0 +1,26 @@
+# The one CI gate for this repo: the existing site test suite, run the
+# same way it is run locally. Exists so branch protection / rulesets on
+# main can require the "site-tests" check before merging.
+name: site-tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  site-tests:
+    name: site-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # No package.json and no dependencies: the suite uses node's
+      # built-in test runner over static files.
+      - run: node --test tests/site.test.js tests/live-theater.test.js
