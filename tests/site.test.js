@@ -155,7 +155,7 @@ test("standard pages share the canonical navigation and CTA", () => {
   const standard = routes.filter((r) => r !== "/live/");
   for (const route of standard) {
     const html = readRoute(route);
-    const nav = html.match(/<nav[^>]*(?:site-nav|home-nav)[^>]*>([\s\S]*?)<\/nav>/i);
+    const nav = html.match(/<nav[^>]*site-nav[^>]*>([\s\S]*?)<\/nav>/i);
     assert.ok(nav, `${route} has no primary nav`);
     for (const [label, href] of [["Home", "/"], ["AI Employees", "/workers/"],
         ["Custom", "/custom/"], ["How It Works", "/how-it-works/"],
@@ -173,4 +173,28 @@ test("Live keeps its Live-specific controls and route home", () => {
   assert.match(html, /id="mode-live"/);
   assert.match(html, /id="mode-replay"/);
   assert.match(html, /class="brand" href="\/"/);
+});
+
+test("the homepage header is the shared implementation, not its own", () => {
+  // it renders its own CSS (it does not load site.css), but the markup,
+  // classes and toggle must be the canonical ones or the menu bar reads
+  // as a different site on the page most visitors land on first
+  const html = readRoute("/");
+  assert.match(html, /<header class="site-header">/);
+  assert.match(html, /<nav id="site-nav" class="site-nav"/);
+  assert.match(html, /class="brand" href="\/"/);
+  assert.match(html, /class="nav-toggle"[^>]*aria-controls="site-nav"/);
+  assert.match(html, /class="nav-cta"/);
+  for (const stale of [/class="mast"/, /id="home-nav"/, /home-nav-toggle/,
+                       /class="mark"/]) {
+    assert.doesNotMatch(html, stale, `homepage still carries ${stale}`);
+  }
+});
+
+test("one script drives the mobile nav on every page", () => {
+  // site.js binds .nav-toggle/.site-nav; a second inline handler on the
+  // same elements toggles the menu twice per tap
+  const html = readRoute("/");
+  assert.match(html, /assets\/site\.js/);
+  assert.doesNotMatch(html, /querySelector\('\.home-nav-toggle'\)/);
 });
