@@ -2,7 +2,7 @@
   "use strict";
 
   const SUPABASE_URL = "https://oushyhkmekemygzxvabh.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXAiLCJyZWYiOiJvdXNoeWhrbWVrZW15Z3p4dmFiaCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzg2MTEzNDQwLCJleHAiOjIxMDE2ODk0NDB9.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
   const MAX_ROWS = 120;
   const VISIBLE_ROWS = 18;
   const RELEVANT_TYPES = new Set([
