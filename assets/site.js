@@ -32,7 +32,7 @@
 
   var intent = new URLSearchParams(window.location.search).get("intent");
   var intentField = document.querySelector("#intent");
-  if (intentField && ["growth", "custom", "other"].indexOf(intent) >= 0) {
+  if (intentField && ["operations", "custom", "other"].indexOf(intent) >= 0) {
     intentField.value = intent;
   }
 
