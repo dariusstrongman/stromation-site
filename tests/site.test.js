@@ -5,7 +5,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const routes = [
-  "/", "/workers/", "/growth-operator/", "/custom/", "/how-it-works/",
+  "/", "/workers/", "/operations-employee/", "/custom/", "/how-it-works/",
   "/live/", "/privacy/", "/terms/", "/technology/", "/governance/"
 ];
 
@@ -73,6 +73,29 @@ test("sitemap contains every intended route exactly once", () => {
   assert.deepEqual(found.sort(), [...routes].sort());
 });
 
+test("the retired Growth Operator page redirects to the flagship", () => {
+  const html = fs.readFileSync(path.join(root, "growth-operator", "index.html"), "utf8");
+  assert.match(html, /meta name="robots" content="noindex"/i);
+  assert.match(html, /http-equiv="refresh" content="0;url=\/operations-employee\/"/i);
+  assert.match(html, /rel="canonical" href="https:\/\/www\.stromation\.com\/operations-employee\/"/i);
+  assert.doesNotMatch(html, /\$99/);
+});
+
+test("only approved offers and prices appear anywhere", () => {
+  const source = routes.map(readRoute).join("\n");
+  assert.doesNotMatch(source, /\$99\b/, "the retired $99 offer resurfaced");
+  assert.doesNotMatch(source, /first ten customers/i);
+  assert.doesNotMatch(source, /Operations Worker/, "coming-soon shadow of the flagship");
+  assert.doesNotMatch(source, /Custom AI Worker\b/);
+  assert.match(readRoute("/operations-employee/"), /\$250 setup \+ \$199 per month/);
+  assert.match(readRoute("/"), /\$250 setup \+ \$199 per month/);
+  assert.match(readRoute("/custom/"), /Starting at \$500 setup \+ \$299\/month/i);
+  // event-driven honesty: never imply continuous inference
+  assert.match(readRoute("/operations-employee/"), /wakes when work arrives/i);
+  // authority split stated
+  assert.match(readRoute("/operations-employee/"), /Requires your approval/);
+});
+
 test("legacy watch URLs keep intentional redirects", () => {
   for (const name of ["index.html", "office.html", "replay.html", "story.html", "watch.html"]) {
     const html = fs.readFileSync(path.join(root, "watch", name), "utf8");
@@ -97,8 +120,7 @@ test("public offer copy avoids fabricated proof and retired products", () => {
   const source = routes.map(readRoute).join("\n");
   assert.doesNotMatch(source, /testimonial|trusted by|customers include|guaranteed ROI/i);
   assert.doesNotMatch(source, /BidEngine|ContractReview|PolicyBot|ConvertAPI|ResumeGo/i);
-  assert.match(readRoute("/growth-operator/"), /first public weekly report is not ready yet/i);
-  assert.match(readRoute("/workers/"), /Coming soon/i);
+  assert.match(readRoute("/workers/"), /Not yet available/i);
 });
 
 test("early access uses the approved FormSubmit intake and discloses it", () => {
@@ -107,8 +129,8 @@ test("early access uses the approved FormSubmit intake and discloses it", () => 
   for (const name of ["name", "email", "company", "intent", "recurring_work", "_honey"]) {
     assert.match(home, new RegExp(`\\bname=["']${name}["']`, "i"), `missing form field ${name}`);
   }
-  assert.match(home, /<option value="growth">Growth Operator<\/option>/);
-  assert.match(home, /<option value="custom">Custom AI Worker<\/option>/);
+  assert.match(home, /<option value="operations">AI Operations Employee<\/option>/);
+  assert.match(home, /<option value="custom">Custom AI Employee<\/option>/);
   assert.match(home, /<option value="other">Something Else<\/option>/);
   const contact = home.match(/<section id="contact"[\s\S]*?<\/section>/i)[0];
   assert.doesNotMatch(contact, /mailto:/i);
