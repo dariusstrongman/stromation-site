@@ -2,7 +2,7 @@
   "use strict";
 
   const SUPABASE_URL = "https://oushyhkmekemygzxvabh.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYXNlIiwicmVmIjoib3VzaHlraG1la2VteWd6eHZhYmgiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NjExMzQ0MCwiZXhwIjoyMTAxNjg5NDQwfQ.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
   const MAX_ROWS = 180;
   const MAX_THREADS = 10;
   const RELEVANT_TYPES = new Set([
@@ -104,122 +104,153 @@
       model: null,
       startedAt: event.ts,
       endedAt: event.ts,
-      status: "In progress",
+      status: "Active",
       messages: [],
-      sourceEvents: []
+      sourceEvents: [],
+      hasHandoff: false
     };
   }
 
   function addSource(thread, event) {
-    thread.sourceEvents.push({ ts: event.ts, headline: event.headline });
+    if (thread.sourceEvents.some((source) => source.id === event.id)) return;
+    thread.sourceEvents.push({
+      id: event.id,
+      ts: event.ts,
+      headline: event.headline,
+      eventType: event.eventType
+    });
     thread.endedAt = event.ts;
   }
 
-  function addMessage(thread, speaker, role, message, ts, kind) {
+  function addMessage(thread, speaker, role, message, event, kind) {
     const text = clean(message, 800);
     if (!text) return;
     const previous = thread.messages[thread.messages.length - 1];
     if (previous && previous.speaker === speaker && previous.text === text) return;
-    thread.messages.push({ speaker, role, text, ts, kind });
+    thread.messages.push({ speaker, role, text, ts: event.ts, sourceId: event.id, kind });
+  }
+
+  function openDelegations(threads) {
+    return threads.filter((thread) => thread.type === "delegation" && thread.status === "Active");
+  }
+
+  function newestMatchingRole(threads, role) {
+    const wanted = clean(role, 70).toLowerCase();
+    if (!wanted) return null;
+    return [...openDelegations(threads)].reverse().find((thread) =>
+      clean(thread.role, 70).toLowerCase() === wanted
+    ) || null;
   }
 
   function buildThreads(events) {
     const threads = [];
-    let active = null;
     let council = null;
 
     events.forEach((event) => {
       if (event.eventType === "handoff_started") {
         const parsed = parseHandoff(event.headline);
-        active = newThread(event, "delegation", parsed ? parsed.role : "Delegated work");
-        active.role = parsed ? parsed.role : null;
-        addSource(active, event);
+        let thread = parsed ? newestMatchingRole(threads, parsed.role) : null;
+        if (!thread || thread.hasHandoff) {
+          thread = newThread(event, "delegation", parsed ? parsed.role : "Delegated work");
+          threads.push(thread);
+        }
+        thread.role = thread.role || (parsed && parsed.role) || null;
+        thread.title = thread.role || thread.title;
+        thread.hasHandoff = true;
+        addSource(thread, event);
         addMessage(
-          active,
+          thread,
           "Sol",
-          active.role ? `To ${active.role}` : "Delegation",
+          thread.role ? `To ${thread.role}` : "Handoff",
           parsed ? parsed.message : meaningful(event),
-          event.ts,
+          event,
           "sol"
         );
-        threads.push(active);
         return;
       }
 
       if (event.eventType === "worker_delegated") {
         const parsed = parseDelegated(event.headline);
-        if (!active || active.status !== "In progress") {
-          active = newThread(event, "delegation", parsed ? parsed.role : "Worker task");
-          threads.push(active);
+        let thread = parsed ? newestMatchingRole(threads, parsed.role) : null;
+        if (!thread) {
+          thread = newThread(event, "delegation", parsed ? parsed.role : "Worker task");
+          threads.push(thread);
         }
-        active.role = active.role || (parsed && parsed.role) || "Worker";
-        active.title = active.role || active.title;
-        active.model = (parsed && parsed.model) || active.model;
-        addSource(active, event);
+        thread.role = thread.role || (parsed && parsed.role) || "Worker";
+        thread.title = thread.role || thread.title;
+        thread.model = (parsed && parsed.model) || thread.model;
+        addSource(thread, event);
         return;
       }
 
       if (event.eventType === "worker_started" || event.eventType === "worker_working") {
-        if (!active || active.status !== "In progress") {
-          active = newThread(event, "delegation", "Worker task");
-          threads.push(active);
-        }
-        addSource(active, event);
+        const open = openDelegations(threads);
+        if (open.length === 1) addSource(open[0], event);
         return;
       }
 
       if (event.eventType === "worker_completed" || event.eventType === "worker_failed") {
-        if (!active || active.status !== "In progress") {
-          active = newThread(event, "delegation", "Worker return");
-          threads.push(active);
+        const open = openDelegations(threads);
+        let thread = null;
+        if (open.length === 1) {
+          thread = open[0];
+        } else {
+          thread = newThread(event, "delegation", "Worker outcome");
+          thread.role = "Worker";
+          threads.push(thread);
         }
-        addSource(active, event);
-        active.status = event.eventType === "worker_completed" ? "Completed" : "Stopped";
+        addSource(thread, event);
+        thread.status = event.eventType === "worker_completed" ? "Completed" : "Stopped";
         addMessage(
-          active,
-          active.role || "Worker",
-          event.eventType === "worker_completed" ? "Return to Sol" : "Stopped",
+          thread,
+          thread.role || "Worker",
+          event.eventType === "worker_completed" ? "Returned" : "Stopped",
           meaningful(event),
-          event.ts,
+          event,
           event.eventType === "worker_completed" ? "worker" : "failure"
         );
-        active = null;
         return;
       }
 
       if (event.eventType === "council_convened") {
-        council = newThread(event, "council", "Council review");
-        council.status = "In review";
+        council = newThread(event, "council", "Council activity");
         addSource(council, event);
-        addMessage(council, "Sol", "To council", meaningful(event), event.ts, "sol");
+        addMessage(council, "Sol", "To council", meaningful(event), event, "sol");
         threads.push(council);
         return;
       }
 
       if (event.eventType === "council_spoke") {
-        if (!council) {
-          council = newThread(event, "council", "Council review");
-          council.status = "In review";
+        if (!council || council.status !== "Active") {
+          council = newThread(event, "council", "Council activity");
           threads.push(council);
         }
         addSource(council, event);
-        addMessage(council, "Advisor", "Council response", meaningful(event), event.ts, "worker");
+        addMessage(council, "Advisor", "Council response", meaningful(event), event, "worker");
         return;
       }
 
       if (event.eventType === "council_concluded") {
-        if (!council) {
-          council = newThread(event, "council", "Council review");
+        if (!council || council.status !== "Active") {
+          council = newThread(event, "council", "Council activity");
           threads.push(council);
         }
         addSource(council, event);
         council.status = "Concluded";
-        addMessage(council, "Sol", "Conclusion", meaningful(event), event.ts, "sol");
+        addMessage(council, "Sol", "Conclusion", meaningful(event), event, "sol");
         council = null;
       }
     });
 
     return threads.filter((thread) => thread.messages.length > 0);
+  }
+
+  function visibleStatus(thread, visibleSources) {
+    const kinds = new Set(visibleSources.map((source) => source.eventType));
+    if (kinds.has("worker_failed")) return "Stopped";
+    if (kinds.has("worker_completed")) return "Completed";
+    if (kinds.has("council_concluded")) return "Concluded";
+    return "Active";
   }
 
   function statusClass(status) {
@@ -228,25 +259,31 @@
     return "is-active";
   }
 
-  function renderThread(thread) {
+  function renderThread(thread, visibleSources) {
+    const visibleIds = new Set(visibleSources.map((source) => source.id));
+    const messages = thread.messages.filter((message) => visibleIds.has(message.sourceId));
+    if (!messages.length) return null;
+
+    const statusText = visibleStatus(thread, visibleSources);
+    const lastSource = visibleSources[visibleSources.length - 1];
     const item = node("li", "event event-conversation");
-    item.dataset.tone = thread.status === "Stopped" ? "bad" : thread.status === "Completed" || thread.status === "Concluded" ? "good" : "cyan";
+    item.dataset.tone = statusText === "Stopped" ? "bad" : statusText === "Completed" || statusText === "Concluded" ? "good" : "cyan";
     item.dataset.threadId = thread.id;
 
-    const time = node("time", "", shortTime(thread.endedAt || thread.startedAt));
-    time.dateTime = thread.endedAt || thread.startedAt;
-    const label = node("span", "event-label", thread.type === "council" ? "Council conversation" : "Work conversation");
+    const time = node("time", "", shortTime(lastSource.ts));
+    time.dateTime = lastSource.ts;
+    const label = node("span", "event-label", thread.type === "council" ? "Council exchange" : "Work conversation");
 
     const copy = node("div", "event-copy conversation-feed-copy");
     const header = node("div", "conversation-card-head");
     const heading = node("div", "conversation-card-title");
     heading.append(node("strong", "", thread.title || "Work thread"));
-    heading.append(node("span", "", thread.model ? `via ${thread.model}` : thread.type === "council" ? "Independent review" : "Real delegation"));
-    header.append(heading, node("span", `conversation-status ${statusClass(thread.status)}`, thread.status));
+    heading.append(node("span", "", thread.model ? `via ${thread.model}` : thread.type === "council" ? "Recorded council events" : "Recorded handoff"));
+    header.append(heading, node("span", `conversation-status ${statusClass(statusText)}`, statusText));
     copy.append(header);
 
     const transcript = node("div", "conversation-transcript");
-    thread.messages.forEach((message) => {
+    messages.forEach((message) => {
       const turn = node("div", `conversation-turn conversation-turn-${message.kind}`);
       const speaker = node("div", "conversation-speaker");
       speaker.append(node("strong", "", message.speaker), node("span", "", message.role));
@@ -260,7 +297,7 @@
     const footer = node("div", "conversation-footer");
     footer.append(
       node("span", "conversation-proof", "Public event record"),
-      node("span", "", `${thread.sourceEvents.length} source event${thread.sourceEvents.length === 1 ? "" : "s"}`)
+      node("span", "", `${visibleSources.length} visible source event${visibleSources.length === 1 ? "" : "s"}`)
     );
     copy.append(footer);
 
@@ -303,14 +340,25 @@
 
     const threads = buildThreads(state.events).slice(-MAX_THREADS).reverse();
     threads.forEach((thread) => {
+      const visibleSources = [];
+      const matchedRows = [];
       thread.sourceEvents.forEach((source) => {
         const raw = findRawEvent(feed, source);
-        if (raw) {
-          raw.hidden = true;
-          raw.dataset.conversationHidden = "true";
-        }
+        if (!raw) return;
+        visibleSources.push(source);
+        matchedRows.push(raw);
       });
-      insertChronologically(feed, renderThread(thread), thread.endedAt || thread.startedAt);
+
+      if (!visibleSources.length) return;
+      const card = renderThread(thread, visibleSources);
+      if (!card) return;
+
+      matchedRows.forEach((raw) => {
+        raw.hidden = true;
+        raw.dataset.conversationHidden = "true";
+      });
+      const lastVisible = visibleSources[visibleSources.length - 1];
+      insertChronologically(feed, card, lastVisible.ts);
     });
 
     if (state.observer) {
