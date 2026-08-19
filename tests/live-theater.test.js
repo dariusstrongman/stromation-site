@@ -5,6 +5,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const Core = require("../live/theater-core.js");
+const root = path.resolve(__dirname, "..");
 
 function event(id, type, seconds, overrides) {
   return {
@@ -185,4 +186,32 @@ test("browser client references only the two approved public tables", () => {
   forbidden.forEach((table) => {
     assert.doesNotMatch(source, new RegExp(`\\.from\\(["']${table}["']\\)`));
   });
+});
+
+test("completed worker outcomes survive into the scene for rendering", () => {
+  const events = [
+    { id: 1, ts: "2026-08-19T04:33:31Z", event_type: "worker_delegated",
+      headline: "Evidence Researcher on gpt was given work." },
+    { id: 2, ts: "2026-08-19T04:33:32Z", event_type: "handoff_started",
+      headline: "Sol handed this to Evidence Researcher: Find which AI tool directories accept submissions" },
+    { id: 3, ts: "2026-08-19T04:35:56Z", event_type: "worker_completed",
+      headline: "A worker finished a evidence pack." }
+  ];
+  const workers = Core.reconstructWorkers(events, 0);
+  assert.equal(workers.active.length, 0);
+  assert.equal(workers.outcomes.length, 1);
+  const job = workers.outcomes[0];
+  assert.equal(job.status, "completed");
+  assert.match(job.role, /Evidence Researcher/i);
+  assert.ok(job.task && job.task.includes("directories"),
+    "the outcome keeps the task so viewers see WHAT the department did");
+});
+
+test("the live page renders recent delegated work, not only active desks", () => {
+  const js = fs.readFileSync(path.join(root, "live", "live.js"), "utf8");
+  assert.match(js, /renderOutcomes/);
+  assert.match(js, /scene\.workers\.outcomes/);
+  const css = fs.readFileSync(path.join(root, "live", "live.css"), "utf8");
+  assert.match(css, /worker-card-done/);
+  assert.match(css, /\.event\[data-tone="cyan"\]/);
 });

@@ -313,3 +313,16 @@ footer a { color: var(--dim); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* Recent delegated work — completed worker jobs stay visible between
+   sessions, so the org's activity reads as an org, not as Sol alone. */
+.worker-outcomes-head { grid-column: 1 / -1; margin-top: 4px; color: var(--dim); font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+.worker-card-done { min-height: 0; opacity: .92; }
+.worker-card-done::before { background: var(--good, #3ddc97); }
+.worker-card-done .worker-status-completed { color: var(--good, #3ddc97); }
+.worker-card-done .worker-status-failed { color: var(--bad, #ff6b6b); }
+
+/* Delegation-family feed lines carry a visible department accent so a
+   handoff never reads as just another Sol line. */
+.event[data-tone="cyan"] { border-left: 2px solid var(--cyan); padding-left: 10px; }
+.event[data-tone="cyan"] .event-label { color: var(--cyan); }

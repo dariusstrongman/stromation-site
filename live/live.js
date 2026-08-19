@@ -167,13 +167,47 @@
     });
   }
 
+  function timeOfDay(iso) {
+    try {
+      return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    } catch (err) {
+      return "unknown";
+    }
+  }
+
+  function renderOutcomes(stage, outcomes) {
+    if (!outcomes || !outcomes.length) return;
+    const head = node("div", "worker-outcomes-head", "Recent delegated work");
+    stage.append(head);
+    outcomes.forEach((job) => {
+      const card = node("article", "worker-card worker-card-done");
+      const top = node("div", "worker-top");
+      top.append(
+        node("h4", "", job.role || "Worker"),
+        node("span", `worker-status worker-status-${job.status}`, job.status === "failed" ? "Failed" : "Delivered")
+      );
+      card.append(top);
+      card.append(node("p", "", job.task || job.result || "Task summary not published."));
+      const meta = node("div", "worker-meta");
+      meta.append(node("span", "", job.model ? `Model · ${job.model}` : "Model · unknown"));
+      meta.append(node("span", "", job.endedAt ? `Finished · ${timeOfDay(job.endedAt)}` : "Finished · unknown"));
+      card.append(meta);
+      stage.append(card);
+    });
+  }
+
   function renderWorkers(scene) {
     const stage = el("worker-stage");
     stage.replaceChildren();
     const workers = scene.workers.active;
+    const outcomes = scene.workers.outcomes || [];
     const shownCount = scene.workers.exactCount == null ? workers.length : scene.workers.exactCount;
     el("worker-count").textContent = shownCount === 0 ? "0 active" : `${shownCount} active`;
     if (!workers.length) {
+      if (outcomes.length) {
+        renderOutcomes(stage, outcomes);
+        return;
+      }
       const empty = node("div", "worker-empty");
       const wrap = node("div");
       wrap.append(node("span", "", "Desks available"), node("strong", "", "Workers appear only while real delegations are active."));
@@ -194,6 +228,7 @@
       card.append(meta);
       stage.append(card);
     });
+    renderOutcomes(stage, scene.workers.outcomes || []);
   }
 
   function renderQuiet(scene) {
