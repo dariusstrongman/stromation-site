@@ -360,8 +360,6 @@
   }
 
   function start() {
-    const oldSection = document.querySelector(".conversation-section");
-    if (oldSection) oldSection.setAttribute("aria-hidden", "true");
     watchFeed();
     load().catch(() => queueRender());
   }
