@@ -1,7 +1,3 @@
-.conversation-section {
-  display: none;
-}
-
 .event-conversation {
   align-items: start;
   background: linear-gradient(180deg, rgba(10, 16, 18, .98), rgba(5, 9, 10, .98));
