@@ -198,3 +198,17 @@ test("one script drives the mobile nav on every page", () => {
   assert.match(html, /assets\/site\.js/);
   assert.doesNotMatch(html, /querySelector\('\.home-nav-toggle'\)/);
 });
+
+test("the homepage grid is the sitewide grid", () => {
+  // the header matched in markup but sat on a narrower container:
+  // site.css draws content at min(100% - pad*2, --max) while the
+  // homepage draws at --w minus its own 24px padding. Desktop content
+  // widths must be equal or the shared header visibly misaligns.
+  const home = readRoute("/");
+  const css = fs.readFileSync(path.join(root, "assets", "site.css"), "utf8");
+  const w = Number(home.match(/--w:\s*(\d+)px/)[1]);
+  const pad = Number(home.match(/--pad:\s*(\d+)px/)[1]);
+  const max = Number(css.match(/--max:\s*(\d+)px/)[1]);
+  assert.equal(w - pad * 2, max,
+    `homepage content width ${w - pad * 2} != sitewide ${max}`);
+});
