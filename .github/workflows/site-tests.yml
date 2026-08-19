@@ -23,4 +23,4 @@ jobs:
           node-version: '22'
       # No package.json and no dependencies: the suite uses node's
       # built-in test runner over static files.
-      - run: node --test tests/site.test.js tests/live-theater.test.js
+      - run: node --test tests/site.test.js tests/live-theater.test.js tests/live-truth.test.js
