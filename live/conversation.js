@@ -3,8 +3,8 @@
 
   const SUPABASE_URL = "https://oushyhkmekemygzxvabh.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
-  const MAX_ROWS = 120;
-  const VISIBLE_ROWS = 18;
+  const MAX_ROWS = 180;
+  const MAX_THREADS = 10;
   const RELEVANT_TYPES = new Set([
     "handoff_started",
     "worker_delegated",
@@ -20,15 +20,18 @@
   const state = {
     client: null,
     channel: null,
-    events: []
+    observer: null,
+    events: [],
+    renderQueued: false
   };
 
   function clean(value, max) {
     if (value == null) return "";
     return String(value)
       .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
+      .replace(/\s+/g, " ")
       .trim()
-      .slice(0, max || 500);
+      .slice(0, max || 700);
   }
 
   function node(tag, className, text) {
@@ -52,8 +55,8 @@
       id: eventKey(raw),
       ts: new Date(parsed).toISOString(),
       eventType,
-      headline: clean(raw.headline, 240) || "Public event recorded.",
-      summary: clean(raw.summary, 500) || null,
+      headline: clean(raw.headline, 320) || "Public event recorded.",
+      summary: clean(raw.summary, 800) || null,
       actor: ["sol", "worker", "system", "owner"].includes(raw.actor) ? raw.actor : "system"
     };
   }
@@ -74,149 +77,261 @@
     if (!Number.isFinite(parsed)) return "Time unknown";
     return new Intl.DateTimeFormat(undefined, {
       hour: "numeric",
-      minute: "2-digit",
-      second: "2-digit"
+      minute: "2-digit"
     }).format(parsed);
   }
 
   function parseHandoff(headline) {
     const match = /^Sol handed this to (.+?):\s*(.+)$/i.exec(headline || "");
-    return match ? { role: clean(match[1], 60), message: clean(match[2], 240) } : null;
+    return match ? { role: clean(match[1], 70), message: clean(match[2], 500) } : null;
   }
 
   function parseDelegated(headline) {
     const match = /^(.+?) on (.+?) was given work\.?$/i.exec(headline || "");
-    return match ? { role: clean(match[1], 60), model: clean(match[2], 40) } : null;
+    return match ? { role: clean(match[1], 70), model: clean(match[2], 60) } : null;
   }
 
-  function presentation(event) {
-    const handoff = event.eventType === "handoff_started" ? parseHandoff(event.headline) : null;
-    const delegated = event.eventType === "worker_delegated" ? parseDelegated(event.headline) : null;
-
-    if (handoff) {
-      return {
-        speaker: "Sol",
-        role: `To ${handoff.role}`,
-        message: handoff.message,
-        kind: "handoff",
-        proof: "Recorded delegation handoff"
-      };
-    }
-
-    if (delegated) {
-      return {
-        speaker: delegated.role || "Worker",
-        role: "Delegation accepted",
-        message: `Assigned on ${delegated.model || "an approved model"}.`,
-        kind: "worker",
-        proof: "Worker delegation recorded"
-      };
-    }
-
-    if (event.eventType === "worker_started" || event.eventType === "worker_working") {
-      return {
-        speaker: "Worker",
-        role: event.eventType === "worker_started" ? "Started" : "Working",
-        message: event.summary || event.headline,
-        kind: "worker",
-        proof: "Worker activity recorded"
-      };
-    }
-
-    if (event.eventType === "worker_completed") {
-      return {
-        speaker: "Worker",
-        role: "Returned to Sol",
-        message: event.summary || event.headline,
-        kind: "worker",
-        proof: "Worker completion recorded"
-      };
-    }
-
-    if (event.eventType === "worker_failed") {
-      return {
-        speaker: "Worker",
-        role: "Stopped",
-        message: event.summary || event.headline,
-        kind: "failure",
-        proof: "Worker failure recorded"
-      };
-    }
-
-    if (event.eventType === "council_convened") {
-      return {
-        speaker: "Sol",
-        role: "To council",
-        message: event.summary || event.headline,
-        kind: "sol",
-        proof: "Council request recorded"
-      };
-    }
-
-    if (event.eventType === "council_spoke") {
-      return {
-        speaker: "Advisor",
-        role: "Council response",
-        message: event.summary || event.headline,
-        kind: "worker",
-        proof: "Council response recorded"
-      };
-    }
-
-    if (event.eventType === "council_concluded") {
-      return {
-        speaker: "Sol",
-        role: "Council conclusion",
-        message: event.summary || event.headline,
-        kind: "sol",
-        proof: "Council conclusion recorded"
-      };
-    }
-
-    return null;
+  function meaningful(event) {
+    return clean(event.summary || event.headline, 800);
   }
 
-  function render() {
-    const shell = document.getElementById("delegation-conversations");
-    if (!shell) return;
-    shell.replaceChildren();
+  function newThread(event, type, title) {
+    return {
+      id: event.id,
+      type,
+      title,
+      role: null,
+      model: null,
+      startedAt: event.ts,
+      endedAt: event.ts,
+      status: "In progress",
+      messages: [],
+      sourceEvents: []
+    };
+  }
 
-    const rows = state.events
-      .map((event) => ({ event, view: presentation(event) }))
-      .filter((item) => item.view)
-      .slice(-VISIBLE_ROWS);
+  function addSource(thread, event) {
+    thread.sourceEvents.push({ ts: event.ts, headline: event.headline });
+    thread.endedAt = event.ts;
+  }
 
-    if (!rows.length) {
-      const empty = node("div", "conversation-empty");
-      const wrap = node("div");
-      wrap.append(
-        node("strong", "", "No delegation conversation published yet."),
-        node("span", "", "When Sol hands work to a colleague, public-safe proof will appear here from real events.")
-      );
-      empty.append(wrap);
-      shell.append(empty);
-      return;
-    }
+  function addMessage(thread, speaker, role, message, ts, kind) {
+    const text = clean(message, 800);
+    if (!text) return;
+    const previous = thread.messages[thread.messages.length - 1];
+    if (previous && previous.speaker === speaker && previous.text === text) return;
+    thread.messages.push({ speaker, role, text, ts, kind });
+  }
 
-    const list = node("ol", "conversation-list");
-    rows.forEach(({ event, view }) => {
-      const item = node("li", "conversation-thread");
-      item.dataset.kind = view.kind;
+  function buildThreads(events) {
+    const threads = [];
+    let active = null;
+    let council = null;
 
-      const speaker = node("div", "conversation-speaker");
-      speaker.append(node("strong", "", view.speaker), node("span", "", view.role));
+    events.forEach((event) => {
+      if (event.eventType === "handoff_started") {
+        const parsed = parseHandoff(event.headline);
+        active = newThread(event, "delegation", parsed ? parsed.role : "Delegated work");
+        active.role = parsed ? parsed.role : null;
+        addSource(active, event);
+        addMessage(
+          active,
+          "Sol",
+          active.role ? `To ${active.role}` : "Delegation",
+          parsed ? parsed.message : meaningful(event),
+          event.ts,
+          "sol"
+        );
+        threads.push(active);
+        return;
+      }
 
-      const copy = node("div", "conversation-copy");
-      copy.append(node("p", "", view.message));
-      const meta = node("div", "conversation-meta");
-      meta.append(node("span", "", shortTime(event.ts)), node("span", "", event.eventType.replaceAll("_", " ")));
-      copy.append(meta, node("span", "conversation-proof", view.proof));
+      if (event.eventType === "worker_delegated") {
+        const parsed = parseDelegated(event.headline);
+        if (!active || active.status !== "In progress") {
+          active = newThread(event, "delegation", parsed ? parsed.role : "Worker task");
+          threads.push(active);
+        }
+        active.role = active.role || (parsed && parsed.role) || "Worker";
+        active.title = active.role || active.title;
+        active.model = (parsed && parsed.model) || active.model;
+        addSource(active, event);
+        return;
+      }
 
-      item.append(speaker, copy);
-      list.append(item);
+      if (event.eventType === "worker_started" || event.eventType === "worker_working") {
+        if (!active || active.status !== "In progress") {
+          active = newThread(event, "delegation", "Worker task");
+          threads.push(active);
+        }
+        addSource(active, event);
+        return;
+      }
+
+      if (event.eventType === "worker_completed" || event.eventType === "worker_failed") {
+        if (!active || active.status !== "In progress") {
+          active = newThread(event, "delegation", "Worker return");
+          threads.push(active);
+        }
+        addSource(active, event);
+        active.status = event.eventType === "worker_completed" ? "Completed" : "Stopped";
+        addMessage(
+          active,
+          active.role || "Worker",
+          event.eventType === "worker_completed" ? "Return to Sol" : "Stopped",
+          meaningful(event),
+          event.ts,
+          event.eventType === "worker_completed" ? "worker" : "failure"
+        );
+        active = null;
+        return;
+      }
+
+      if (event.eventType === "council_convened") {
+        council = newThread(event, "council", "Council review");
+        council.status = "In review";
+        addSource(council, event);
+        addMessage(council, "Sol", "To council", meaningful(event), event.ts, "sol");
+        threads.push(council);
+        return;
+      }
+
+      if (event.eventType === "council_spoke") {
+        if (!council) {
+          council = newThread(event, "council", "Council review");
+          council.status = "In review";
+          threads.push(council);
+        }
+        addSource(council, event);
+        addMessage(council, "Advisor", "Council response", meaningful(event), event.ts, "worker");
+        return;
+      }
+
+      if (event.eventType === "council_concluded") {
+        if (!council) {
+          council = newThread(event, "council", "Council review");
+          threads.push(council);
+        }
+        addSource(council, event);
+        council.status = "Concluded";
+        addMessage(council, "Sol", "Conclusion", meaningful(event), event.ts, "sol");
+        council = null;
+      }
     });
 
-    shell.append(list);
+    return threads.filter((thread) => thread.messages.length > 0);
+  }
+
+  function statusClass(status) {
+    if (status === "Completed" || status === "Concluded") return "is-complete";
+    if (status === "Stopped") return "is-failed";
+    return "is-active";
+  }
+
+  function renderThread(thread) {
+    const item = node("li", "event event-conversation");
+    item.dataset.tone = thread.status === "Stopped" ? "bad" : thread.status === "Completed" || thread.status === "Concluded" ? "good" : "cyan";
+    item.dataset.threadId = thread.id;
+
+    const time = node("time", "", shortTime(thread.endedAt || thread.startedAt));
+    time.dateTime = thread.endedAt || thread.startedAt;
+    const label = node("span", "event-label", thread.type === "council" ? "Council conversation" : "Work conversation");
+
+    const copy = node("div", "event-copy conversation-feed-copy");
+    const header = node("div", "conversation-card-head");
+    const heading = node("div", "conversation-card-title");
+    heading.append(node("strong", "", thread.title || "Work thread"));
+    heading.append(node("span", "", thread.model ? `via ${thread.model}` : thread.type === "council" ? "Independent review" : "Real delegation"));
+    header.append(heading, node("span", `conversation-status ${statusClass(thread.status)}`, thread.status));
+    copy.append(header);
+
+    const transcript = node("div", "conversation-transcript");
+    thread.messages.forEach((message) => {
+      const turn = node("div", `conversation-turn conversation-turn-${message.kind}`);
+      const speaker = node("div", "conversation-speaker");
+      speaker.append(node("strong", "", message.speaker), node("span", "", message.role));
+      const messageCopy = node("div", "conversation-copy");
+      messageCopy.append(node("p", "", message.text), node("time", "conversation-time", shortTime(message.ts)));
+      turn.append(speaker, messageCopy);
+      transcript.append(turn);
+    });
+    copy.append(transcript);
+
+    const footer = node("div", "conversation-footer");
+    footer.append(
+      node("span", "conversation-proof", "Public event record"),
+      node("span", "", `${thread.sourceEvents.length} source event${thread.sourceEvents.length === 1 ? "" : "s"}`)
+    );
+    copy.append(footer);
+
+    item.append(time, label, copy);
+    return item;
+  }
+
+  function findRawEvent(feed, source) {
+    const rows = [...feed.querySelectorAll("li.event:not(.event-conversation)")];
+    return rows.find((row) => {
+      const time = row.querySelector(":scope > time");
+      const headline = row.querySelector(".event-copy > strong");
+      return time && headline && time.dateTime === source.ts && clean(headline.textContent, 320) === source.headline;
+    }) || null;
+  }
+
+  function insertChronologically(feed, card, timestamp) {
+    const when = Date.parse(timestamp);
+    const rows = [...feed.children];
+    const anchor = rows.find((row) => {
+      if (!(row instanceof HTMLElement) || !row.classList.contains("event")) return false;
+      const time = row.querySelector(":scope > time");
+      if (!time || !time.dateTime) return false;
+      return Date.parse(time.dateTime) <= when;
+    });
+    if (anchor) feed.insertBefore(card, anchor);
+    else feed.append(card);
+  }
+
+  function renderIntoFeed() {
+    const feed = document.getElementById("event-feed");
+    if (!feed) return;
+
+    if (state.observer) state.observer.disconnect();
+    feed.querySelectorAll(".event-conversation").forEach((row) => row.remove());
+    feed.querySelectorAll("li.event[data-conversation-hidden=\"true\"]").forEach((row) => {
+      row.hidden = false;
+      delete row.dataset.conversationHidden;
+    });
+
+    const threads = buildThreads(state.events).slice(-MAX_THREADS).reverse();
+    threads.forEach((thread) => {
+      thread.sourceEvents.forEach((source) => {
+        const raw = findRawEvent(feed, source);
+        if (raw) {
+          raw.hidden = true;
+          raw.dataset.conversationHidden = "true";
+        }
+      });
+      insertChronologically(feed, renderThread(thread), thread.endedAt || thread.startedAt);
+    });
+
+    if (state.observer) {
+      state.observer.observe(feed, { childList: true, subtree: false });
+    }
+  }
+
+  function queueRender() {
+    if (state.renderQueued) return;
+    state.renderQueued = true;
+    requestAnimationFrame(() => {
+      state.renderQueued = false;
+      renderIntoFeed();
+    });
+  }
+
+  function watchFeed() {
+    const feed = document.getElementById("event-feed");
+    if (!feed || !window.MutationObserver) return;
+    state.observer = new MutationObserver(() => queueRender());
+    state.observer.observe(feed, { childList: true, subtree: false });
   }
 
   async function load() {
@@ -225,26 +340,28 @@
     const response = await state.client
       .from("public_events")
       .select("id,ts,event_type,headline,summary,actor")
+      .in("event_type", [...RELEVANT_TYPES])
       .order("ts", { ascending: false })
       .limit(MAX_ROWS);
 
     if (!response.error && Array.isArray(response.data)) {
       merge(response.data.reverse());
-      render();
+      queueRender();
     }
 
     state.channel = state.client
-      .channel("stromation-live-conversations")
+      .channel("stromation-live-conversation-feed")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "public_events" }, (payload) => {
+        if (!payload.new || !RELEVANT_TYPES.has(payload.new.event_type)) return;
         merge([payload.new]);
-        render();
+        queueRender();
       })
       .subscribe();
   }
 
   function start() {
-    render();
-    load().catch(() => render());
+    watchFeed();
+    load().catch(() => queueRender());
   }
 
   if (document.readyState === "loading") {
