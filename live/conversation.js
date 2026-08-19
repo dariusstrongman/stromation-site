@@ -1,27 +1,9 @@
 (function () {
   "use strict";
 
-  const SUPABASE_URL = "https://oushyhkmekemygzxvabh.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91c2h5aGttZWtlbXlnenh2YWJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxMTM0NDAsImV4cCI6MjEwMTY4OTQ0MH0.bvm3rJF6rY6_tL3Ra_AJgd0b3vkajt4J0Fs8MjhsvTg";
-  const MAX_ROWS = 180;
   const MAX_THREADS = 10;
-  const RELEVANT_TYPES = new Set([
-    "handoff_started",
-    "worker_delegated",
-    "worker_started",
-    "worker_working",
-    "worker_completed",
-    "worker_failed",
-    "council_convened",
-    "council_spoke",
-    "council_concluded"
-  ]);
-
   const state = {
-    client: null,
-    channel: null,
     observer: null,
-    events: [],
     renderQueued: false
   };
 
@@ -31,7 +13,7 @@
       .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, max || 700);
+      .slice(0, max || 800);
   }
 
   function node(tag, className, text) {
@@ -39,37 +21,6 @@
     if (className) el.className = className;
     if (text != null) el.textContent = text;
     return el;
-  }
-
-  function eventKey(event) {
-    return String(event.id || `${event.ts}|${event.event_type}|${event.headline}`);
-  }
-
-  function normalize(raw) {
-    if (!raw || typeof raw !== "object") return null;
-    const eventType = clean(raw.event_type, 64);
-    if (!RELEVANT_TYPES.has(eventType)) return null;
-    const parsed = Date.parse(raw.ts);
-    if (!Number.isFinite(parsed)) return null;
-    return {
-      id: eventKey(raw),
-      ts: new Date(parsed).toISOString(),
-      eventType,
-      headline: clean(raw.headline, 320) || "Public event recorded.",
-      summary: clean(raw.summary, 800) || null,
-      actor: ["sol", "worker", "system", "owner"].includes(raw.actor) ? raw.actor : "system"
-    };
-  }
-
-  function merge(incoming) {
-    const map = new Map(state.events.map((event) => [event.id, event]));
-    (incoming || []).forEach((raw) => {
-      const event = normalize(raw);
-      if (event) map.set(event.id, event);
-    });
-    state.events = [...map.values()]
-      .sort((a, b) => Date.parse(a.ts) - Date.parse(b.ts))
-      .slice(-MAX_ROWS);
   }
 
   function shortTime(value) {
@@ -91,8 +42,43 @@
     return match ? { role: clean(match[1], 70), model: clean(match[2], 60) } : null;
   }
 
+  function eventKind(label) {
+    const value = clean(label, 80).toLowerCase();
+    if (value === "handoff") return "handoff";
+    if (value === "worker delegated") return "delegated";
+    if (value === "worker started") return "started";
+    if (value === "worker working") return "working";
+    if (value === "worker returned") return "completed";
+    if (value === "worker stopped") return "failed";
+    if (value === "council convened") return "council_convened";
+    if (value === "council response") return "council_spoke";
+    if (value === "council concluded") return "council_concluded";
+    return null;
+  }
+
+  function readEvents(feed) {
+    const rows = [...feed.querySelectorAll("li.event:not(.event-conversation)")];
+    return rows.map((row, index) => {
+      const time = row.querySelector(":scope > time");
+      const label = row.querySelector(":scope > .event-label");
+      const headline = row.querySelector(".event-copy > strong");
+      const summary = row.querySelector(".event-copy > p");
+      const ts = time && time.dateTime;
+      const kind = eventKind(label && label.textContent);
+      if (!ts || !kind || !headline) return null;
+      return {
+        id: `${ts}|${kind}|${index}`,
+        row,
+        ts,
+        kind,
+        headline: clean(headline.textContent, 320),
+        summary: clean(summary && summary.textContent, 800) || null
+      };
+    }).filter(Boolean).reverse();
+  }
+
   function meaningful(event) {
-    return clean(event.summary || event.headline, 800);
+    return event.summary || event.headline;
   }
 
   function newThread(event, type, title) {
@@ -102,24 +88,16 @@
       title,
       role: null,
       model: null,
-      startedAt: event.ts,
-      endedAt: event.ts,
       status: "Active",
       messages: [],
-      sourceEvents: [],
+      sources: [],
       hasHandoff: false
     };
   }
 
   function addSource(thread, event) {
-    if (thread.sourceEvents.some((source) => source.id === event.id)) return;
-    thread.sourceEvents.push({
-      id: event.id,
-      ts: event.ts,
-      headline: event.headline,
-      eventType: event.eventType
-    });
-    thread.endedAt = event.ts;
+    if (thread.sources.some((source) => source.id === event.id)) return;
+    thread.sources.push(event);
   }
 
   function addMessage(thread, speaker, role, message, event, kind) {
@@ -127,7 +105,7 @@
     if (!text) return;
     const previous = thread.messages[thread.messages.length - 1];
     if (previous && previous.speaker === speaker && previous.text === text) return;
-    thread.messages.push({ speaker, role, text, ts: event.ts, sourceId: event.id, kind });
+    thread.messages.push({ speaker, role, text, ts: event.ts, kind });
   }
 
   function openDelegations(threads) {
@@ -147,7 +125,7 @@
     let council = null;
 
     events.forEach((event) => {
-      if (event.eventType === "handoff_started") {
+      if (event.kind === "handoff") {
         const parsed = parseHandoff(event.headline);
         let thread = parsed ? newestMatchingRole(threads, parsed.role) : null;
         if (!thread || thread.hasHandoff) {
@@ -169,7 +147,7 @@
         return;
       }
 
-      if (event.eventType === "worker_delegated") {
+      if (event.kind === "delegated") {
         const parsed = parseDelegated(event.headline);
         let thread = parsed ? newestMatchingRole(threads, parsed.role) : null;
         if (!thread) {
@@ -183,15 +161,15 @@
         return;
       }
 
-      if (event.eventType === "worker_started" || event.eventType === "worker_working") {
+      if (event.kind === "started" || event.kind === "working") {
         const open = openDelegations(threads);
         if (open.length === 1) addSource(open[0], event);
         return;
       }
 
-      if (event.eventType === "worker_completed" || event.eventType === "worker_failed") {
+      if (event.kind === "completed" || event.kind === "failed") {
         const open = openDelegations(threads);
-        let thread = null;
+        let thread;
         if (open.length === 1) {
           thread = open[0];
         } else {
@@ -200,19 +178,19 @@
           threads.push(thread);
         }
         addSource(thread, event);
-        thread.status = event.eventType === "worker_completed" ? "Completed" : "Stopped";
+        thread.status = event.kind === "completed" ? "Completed" : "Stopped";
         addMessage(
           thread,
           thread.role || "Worker",
-          event.eventType === "worker_completed" ? "Returned" : "Stopped",
+          event.kind === "completed" ? "Returned" : "Stopped",
           meaningful(event),
           event,
-          event.eventType === "worker_completed" ? "worker" : "failure"
+          event.kind === "completed" ? "worker" : "failure"
         );
         return;
       }
 
-      if (event.eventType === "council_convened") {
+      if (event.kind === "council_convened") {
         council = newThread(event, "council", "Council activity");
         addSource(council, event);
         addMessage(council, "Sol", "To council", meaningful(event), event, "sol");
@@ -220,7 +198,7 @@
         return;
       }
 
-      if (event.eventType === "council_spoke") {
+      if (event.kind === "council_spoke") {
         if (!council || council.status !== "Active") {
           council = newThread(event, "council", "Council activity");
           threads.push(council);
@@ -230,7 +208,7 @@
         return;
       }
 
-      if (event.eventType === "council_concluded") {
+      if (event.kind === "council_concluded") {
         if (!council || council.status !== "Active") {
           council = newThread(event, "council", "Council activity");
           threads.push(council);
@@ -245,29 +223,16 @@
     return threads.filter((thread) => thread.messages.length > 0);
   }
 
-  function visibleStatus(thread, visibleSources) {
-    const kinds = new Set(visibleSources.map((source) => source.eventType));
-    if (kinds.has("worker_failed")) return "Stopped";
-    if (kinds.has("worker_completed")) return "Completed";
-    if (kinds.has("council_concluded")) return "Concluded";
-    return "Active";
-  }
-
   function statusClass(status) {
     if (status === "Completed" || status === "Concluded") return "is-complete";
     if (status === "Stopped") return "is-failed";
     return "is-active";
   }
 
-  function renderThread(thread, visibleSources) {
-    const visibleIds = new Set(visibleSources.map((source) => source.id));
-    const messages = thread.messages.filter((message) => visibleIds.has(message.sourceId));
-    if (!messages.length) return null;
-
-    const statusText = visibleStatus(thread, visibleSources);
-    const lastSource = visibleSources[visibleSources.length - 1];
+  function renderThread(thread) {
+    const lastSource = thread.sources[thread.sources.length - 1];
     const item = node("li", "event event-conversation");
-    item.dataset.tone = statusText === "Stopped" ? "bad" : statusText === "Completed" || statusText === "Concluded" ? "good" : "cyan";
+    item.dataset.tone = thread.status === "Stopped" ? "bad" : thread.status === "Completed" || thread.status === "Concluded" ? "good" : "cyan";
     item.dataset.threadId = thread.id;
 
     const time = node("time", "", shortTime(lastSource.ts));
@@ -279,11 +244,11 @@
     const heading = node("div", "conversation-card-title");
     heading.append(node("strong", "", thread.title || "Work thread"));
     heading.append(node("span", "", thread.model ? `via ${thread.model}` : thread.type === "council" ? "Recorded council events" : "Recorded handoff"));
-    header.append(heading, node("span", `conversation-status ${statusClass(statusText)}`, statusText));
+    header.append(heading, node("span", `conversation-status ${statusClass(thread.status)}`, thread.status));
     copy.append(header);
 
     const transcript = node("div", "conversation-transcript");
-    messages.forEach((message) => {
+    thread.messages.forEach((message) => {
       const turn = node("div", `conversation-turn conversation-turn-${message.kind}`);
       const speaker = node("div", "conversation-speaker");
       speaker.append(node("strong", "", message.speaker), node("span", "", message.role));
@@ -297,21 +262,12 @@
     const footer = node("div", "conversation-footer");
     footer.append(
       node("span", "conversation-proof", "Public event record"),
-      node("span", "", `${visibleSources.length} visible source event${visibleSources.length === 1 ? "" : "s"}`)
+      node("span", "", `${thread.sources.length} source event${thread.sources.length === 1 ? "" : "s"}`)
     );
     copy.append(footer);
 
     item.append(time, label, copy);
     return item;
-  }
-
-  function findRawEvent(feed, source) {
-    const rows = [...feed.querySelectorAll("li.event:not(.event-conversation)")];
-    return rows.find((row) => {
-      const time = row.querySelector(":scope > time");
-      const headline = row.querySelector(".event-copy > strong");
-      return time && headline && time.dateTime === source.ts && clean(headline.textContent, 320) === source.headline;
-    }) || null;
   }
 
   function insertChronologically(feed, card, timestamp) {
@@ -338,27 +294,16 @@
       delete row.dataset.conversationHidden;
     });
 
-    const threads = buildThreads(state.events).slice(-MAX_THREADS).reverse();
+    const events = readEvents(feed);
+    const threads = buildThreads(events).slice(-MAX_THREADS).reverse();
     threads.forEach((thread) => {
-      const visibleSources = [];
-      const matchedRows = [];
-      thread.sourceEvents.forEach((source) => {
-        const raw = findRawEvent(feed, source);
-        if (!raw) return;
-        visibleSources.push(source);
-        matchedRows.push(raw);
+      thread.sources.forEach((source) => {
+        source.row.hidden = true;
+        source.row.dataset.conversationHidden = "true";
       });
-
-      if (!visibleSources.length) return;
-      const card = renderThread(thread, visibleSources);
-      if (!card) return;
-
-      matchedRows.forEach((raw) => {
-        raw.hidden = true;
-        raw.dataset.conversationHidden = "true";
-      });
-      const lastVisible = visibleSources[visibleSources.length - 1];
-      insertChronologically(feed, card, lastVisible.ts);
+      const card = renderThread(thread);
+      const lastSource = thread.sources[thread.sources.length - 1];
+      insertChronologically(feed, card, lastSource.ts);
     });
 
     if (state.observer) {
@@ -380,41 +325,12 @@
     if (!feed || !window.MutationObserver) return;
     state.observer = new MutationObserver(() => queueRender());
     state.observer.observe(feed, { childList: true, subtree: false });
-  }
-
-  async function load() {
-    if (!window.supabase || !window.supabase.createClient) return;
-    state.client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const response = await state.client
-      .from("public_events")
-      .select("id,ts,event_type,headline,summary,actor")
-      .in("event_type", [...RELEVANT_TYPES])
-      .order("ts", { ascending: false })
-      .limit(MAX_ROWS);
-
-    if (!response.error && Array.isArray(response.data)) {
-      merge(response.data.reverse());
-      queueRender();
-    }
-
-    state.channel = state.client
-      .channel("stromation-live-conversation-feed")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "public_events" }, (payload) => {
-        if (!payload.new || !RELEVANT_TYPES.has(payload.new.event_type)) return;
-        merge([payload.new]);
-        queueRender();
-      })
-      .subscribe();
-  }
-
-  function start() {
-    watchFeed();
-    load().catch(() => queueRender());
+    queueRender();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start, { once: true });
+    document.addEventListener("DOMContentLoaded", watchFeed, { once: true });
   } else {
-    start();
+    watchFeed();
   }
 })();
