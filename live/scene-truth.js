@@ -1,10 +1,9 @@
-(function () {
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api;
+  if (root && root.StromationTheater) api.install(root.StromationTheater);
+})(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
-
-  const Core = window.StromationTheater;
-  if (!Core || typeof Core.deriveScene !== "function") return;
-
-  const originalDeriveScene = Core.deriveScene;
 
   function clean(value, max) {
     if (value == null) return "";
@@ -17,17 +16,6 @@
   function parseHandoff(headline) {
     const match = /^Sol handed this to (.+?):\s*(.+)$/i.exec(headline || "");
     return match ? { role: clean(match[1], 48), task: clean(match[2], 180) } : null;
-  }
-
-  function parseDelegated(event) {
-    if (typeof Core.parseWorkerDelegation === "function") {
-      return Core.parseWorkerDelegation(event);
-    }
-    const match = /^(.+?) on (.+?) was given work\.?$/i.exec(event.headline || "");
-    return {
-      role: clean(match && match[1], 48) || "Worker",
-      model: clean(match && match[2], 32) || null
-    };
   }
 
   function anonymousWorker(index) {
@@ -44,11 +32,24 @@
     };
   }
 
-  function reconstructWorkers(events, exactCount) {
-    const ordered = typeof Core.mergeEvents === "function" ? Core.mergeEvents([], events || []) : [...(events || [])];
+  function reconstructWorkers(Core, events, exactCount) {
+    const ordered = typeof Core.mergeEvents === "function"
+      ? Core.mergeEvents([], events || [])
+      : [...(events || [])];
     const open = [];
     const outcomes = [];
     let identityAmbiguous = false;
+
+    function parseDelegated(event) {
+      if (typeof Core.parseWorkerDelegation === "function") {
+        return Core.parseWorkerDelegation(event);
+      }
+      const match = /^(.+?) on (.+?) was given work\.?$/i.exec(event.headline || "");
+      return {
+        role: clean(match && match[1], 48) || "Worker",
+        model: clean(match && match[2], 32) || null
+      };
+    }
 
     ordered.forEach((event) => {
       if (event.event_type === "worker_delegated") {
@@ -142,11 +143,26 @@
     };
   }
 
-  Core.reconstructWorkers = reconstructWorkers;
-  Core.deriveScene = function deriveScene(events, publicState, options) {
-    const scene = originalDeriveScene(events, publicState, options);
-    const replay = Boolean(options && options.replay);
-    scene.workers = reconstructWorkers(scene.events, replay ? null : publicState && publicState.workers_active);
-    return scene;
-  };
-})();
+  function install(Core) {
+    if (!Core || typeof Core.deriveScene !== "function") return Core;
+    if (Core.__truthSceneInstalled) return Core;
+
+    const originalDeriveScene = Core.deriveScene.bind(Core);
+    const truthReconstruct = (events, exactCount) => reconstructWorkers(Core, events, exactCount);
+
+    Core.reconstructWorkers = truthReconstruct;
+    Core.deriveScene = function deriveScene(events, publicState, options) {
+      const scene = originalDeriveScene(events, publicState, options);
+      const replay = Boolean(options && options.replay);
+      scene.workers = truthReconstruct(
+        scene.events,
+        replay ? null : publicState && publicState.workers_active
+      );
+      return scene;
+    };
+    Core.__truthSceneInstalled = true;
+    return Core;
+  }
+
+  return { clean, parseHandoff, anonymousWorker, reconstructWorkers, install };
+});
