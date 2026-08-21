@@ -2,6 +2,10 @@
 
 The static public site for Stromation and its realtime company theater.
 
+[![SPONSORED BY E2B FOR STARTUPS](https://img.shields.io/badge/SPONSORED%20BY-E2B%20FOR%20STARTUPS-ff8800?style=for-the-badge)](https://e2b.dev/startups)
+
+Stromation has been accepted into E2B for Startups. We appreciate E2B's support as we evaluate its isolated cloud sandboxes for safer AI-worker execution without direct access to company infrastructure.
+
 ## Public routes
 
 - `/` company and offer overview
