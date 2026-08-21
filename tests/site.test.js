@@ -6,7 +6,8 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const routes = [
   "/", "/workers/", "/operations-employee/", "/custom/", "/how-it-works/",
-  "/live/", "/privacy/", "/terms/", "/technology/", "/governance/"
+  "/live/", "/privacy/", "/terms/", "/technology/", "/governance/",
+  "/resources/automate-business-operations/"
 ];
 
 function routeFile(route) {
