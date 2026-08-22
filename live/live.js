@@ -370,6 +370,13 @@
     renderClock(scene);
     renderStage(scene);
     renderProcess(scene.stage);
+    if (window.StromationOps && app.mode !== "replay") {
+      // the operations desk shows only the CURRENT published block —
+      // replay renders historical events, and pretending the current
+      // observer block belongs to an old session would be a lie
+      window.StromationOps.render(document,
+        (app.publicState || {}).observer);
+    }
     renderHUD();
     renderFeed(scene.events);
     renderConnection();

@@ -124,6 +124,24 @@
     <section class="process-section" aria-labelledby="process-title">
       <div class="section-cap"><span id="process-title">Current process</span><b>Stages illuminate from real events</b></div>
       <ol id="process-track" class="process-track"></ol>
+
+      <section id="ops-panel" class="ops-panel" aria-labelledby="ops-title" data-stage="idle">
+        <div class="section-cap"><span id="ops-title">Operations desk</span><b>Who owns the work, under what authority, and what the review ruled</b></div>
+        <p id="ops-stage" class="ops-stage">No delegated work item is active</p>
+        <p id="ops-workitem" class="ops-workitem" data-tone="plain">No reviewed work item has been published.</p>
+        <div class="ops-columns">
+          <div>
+            <h3 class="ops-heading">Hand-offs</h3>
+            <ol id="ops-delegations" class="ops-list" aria-live="polite"></ol>
+          </div>
+          <div>
+            <h3 class="ops-heading">Credentials out</h3>
+            <ol id="ops-grants" class="ops-list" aria-live="polite"></ol>
+          </div>
+        </div>
+        <p id="ops-session" class="ops-session">No session metadata published.</p>
+        <p class="ops-note">Every line above is read from the company's published operational state — the same block the public observer endpoint serves. Unknowns stay unknown; private work says "private work".</p>
+      </section>
     </section>
 
     <section class="company-hud" aria-labelledby="hud-title">
@@ -199,6 +217,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="/live/theater-core.js"></script>
   <script src="/live/scene-truth.js"></script>
+  <script src="/live/ops-panel.js"></script>
   <script src="/live/live.js"></script>
   <script src="/live/conversation.js"></script>
 </body>

@@ -326,3 +326,24 @@ footer a { color: var(--dim); }
    handoff never reads as just another Sol line. */
 .event[data-tone="cyan"] { border-left: 2px solid var(--cyan); padding-left: 10px; }
 .event[data-tone="cyan"] .event-label { color: var(--cyan); }
+
+/* ── operations desk ─────────────────────────────────────────────── */
+.ops-panel { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; background: var(--panel, rgba(255,255,255,0.02)); }
+.ops-stage { margin: 12px 0 2px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); }
+.ops-panel[data-stage="shipped"] .ops-stage { color: var(--good, #7dd87d); }
+.ops-workitem { margin: 4px 0 14px; font-size: 15px; color: var(--ink, #e8e8e8); }
+.ops-workitem[data-tone="good"] { color: var(--good, #7dd87d); }
+.ops-workitem[data-tone="warn"] { color: var(--warn, #e8c464); }
+.ops-workitem[data-tone="bad"] { color: var(--bad, #e87d7d); }
+.ops-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 720px) { .ops-columns { grid-template-columns: 1fr; } }
+.ops-heading { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); font-weight: 500; }
+.ops-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ops-row { font-size: 13.5px; line-height: 1.45; padding: 7px 10px; border-left: 2px solid var(--line); background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0; color: var(--ink, #ddd); }
+.ops-row.is-good { border-left-color: var(--good, #7dd87d); }
+.ops-row.is-bad { border-left-color: var(--bad, #e87d7d); }
+.ops-row.is-cyan { border-left-color: var(--cyan); }
+.ops-row.is-quiet, .ops-row.is-plain { color: var(--faint); }
+.ops-row.is-empty { color: var(--faint); font-style: italic; border-left-style: dashed; }
+.ops-session { margin: 14px 0 4px; font-size: 13px; color: var(--faint); }
+.ops-note { margin: 8px 0 0; font-size: 12px; color: var(--faint); opacity: 0.85; }
