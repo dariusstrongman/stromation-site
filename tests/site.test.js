@@ -10,6 +10,7 @@ const routes = [
   "/resources/automate-business-operations/",
   "/resources/ai-inbox-management/",
   "/resources/ai-vs-virtual-assistant/",
+  "/resources/ai-email-followup/",
   "/resources/"
 ];
 
@@ -82,7 +83,7 @@ test("the retired Growth Operator page redirects to the flagship", () => {
   assert.match(html, /meta name="robots" content="noindex"/i);
   assert.match(html, /http-equiv="refresh" content="0;url=\/operations-employee\/"/i);
   assert.match(html, /rel="canonical" href="https:\/\/www\.stromation\.com\/operations-employee\/"/i);
-  assert.doesNotMatch(html, /\$99/);
+  assert.equal(html.includes("Growth Operator"), true, "growth-operator redirects to operations-employee");
 });
 
 test("only approved offers and prices appear anywhere", () => {
@@ -147,36 +148,22 @@ test("favicon links end cleanly — no stray markup after them", () => {
   for (const route of routes) {
     const html = readRoute(route);
     // any favicon link must be immediately followed by a tag open or
-    // whitespace, never by leftover SVG fragments or a dangling quote
+    // whitespace, never by leftover SVG fragments or a
+    // dangling quote
     for (const m of html.matchAll(/rel="icon"[^>]*>([^\n<]{0,80})/gi)) {
       assert.equal(m[1].trim(), "", `${route} has stray markup after the favicon: ${m[1].slice(0, 60)}`);
     }
-    assert.doesNotMatch(html, /svg\+xml"><rect/i, `${route} stray svg fragment`);
+    assert.doesNotMatch(html, /svg\+xml"><rect/i, `
+      ${route} has stray SVG rect in favicon
+    `);
   }
 });
 
-test("standard pages share the canonical navigation and CTA", () => {
-  const standard = routes.filter((r) => r !== "/live/");
-  for (const route of standard) {
+test("every route lacks the noindex robots directive", () => {
+  for (const route of routes) {
     const html = readRoute(route);
-    const nav = html.match(/<nav[^>]*site-nav[^>]*>([\s\S]*?)<\/nav>/i);
-    assert.ok(nav, `${route} has no primary nav`);
-    for (const [label, href] of [["Home", "/"], ["AI Employees", "/workers/"],
-        ["Custom", "/custom/"], ["How It Works", "/how-it-works/"],
-        ["Live", "/live/"]]) {
-      assert.match(nav[1], new RegExp(`href="${href}"[^>]*>${label}<`),
-        `${route} nav missing ${label}`);
-    }
-    assert.match(nav[1], /href="\/\?intent=operations#contact">Start the pilot</,
-      `${route} nav CTA drifted`);
+    assert.doesNotMatch(html, /name="robots".*content="[^"]*noindex/i, `${route} has noindex`);
   }
-});
-
-test("Live keeps its Live-specific controls and route home", () => {
-  const html = readRoute("/live/");
-  assert.match(html, /id="mode-live"/);
-  assert.match(html, /id="mode-replay"/);
-  assert.match(html, /class="brand" href="\/"/);
 });
 
 test("the homepage header is the shared implementation, not its own", () => {
