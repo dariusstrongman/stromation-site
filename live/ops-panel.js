@@ -71,14 +71,22 @@
    * LATEST REVIEWED work, in the past tense it belongs in. Terminal
    * delegations (done/failed) claim no current stage at all. */
   function deriveNow(vm) {
-    const current = vm.delegations.find(
-      (d) => d.status === "running" || d.status === "pending") || null;
+    // ALL current delegations count. observer.delegations is newest-
+    // first, so picking the first current row let a fresh pending
+    // delegation mask a job that is actually RUNNING — reducing a
+    // working company to "queued". Running rows prove execution
+    // whatever else sits in the list; pending rows add a queue count.
+    const running = vm.delegations.filter((d) => d.status === "running");
+    const pending = vm.delegations.filter((d) => d.status === "pending");
     const liveGrants = vm.grants.filter((g) => g.active);
-    const joined = !!(current && liveGrants.some(
-      (g) => g.delegationId && g.delegationId === current.id));
+    // the join is claimed only when a live grant's durable id matches
+    // a delegation that is actually EXECUTING right now
+    const joined = liveGrants.some((g) => g.delegationId &&
+      running.some((d) => d.id === g.delegationId));
     return {
-      delegation: current ? (current.status === "running"
-        ? "executing" : "queued") : null,
+      delegation: running.length ? "executing"
+        : (pending.length ? "queued" : null),
+      pendingCount: pending.length,
       authority: liveGrants.length > 0,
       joined
     };
@@ -86,11 +94,15 @@
 
   function nowLine(vm) {
     const now = vm.now;
-    if (now.joined) return "Now · executing under a live credential";
+    const queueTail = (now.delegation === "executing" && now.pendingCount)
+      ? " (+" + now.pendingCount + " queued)" : "";
+    if (now.joined) {
+      return "Now · executing under a live credential" + queueTail;
+    }
     const bits = [];
     if (now.delegation) bits.push(now.delegation);
     if (now.authority) bits.push("credential out");
-    if (bits.length) return "Now · " + bits.join(" · ");
+    if (bits.length) return "Now · " + bits.join(" · ") + queueTail;
     return "Now · no hand-off or credential is active";
   }
 
@@ -208,9 +220,21 @@
 
   /* DOM renderer. Container ids are fixed in index.html; absent panel
    * (old cached page) is a no-op. */
-  function render(doc, observer) {
+  function render(doc, observer, options) {
     const rootEl = doc.getElementById("ops-panel");
     if (!rootEl) return;
+    // TWO TIMEFRAMES NEVER SHARE A SCREEN. The desk shows the CURRENT
+    // published block; replay shows a historical session. Skipping the
+    // repaint in replay left the last live frame standing next to the
+    // historical theater — a mixed-timeframe lie. In replay the desk
+    // is hidden outright (no historical observer snapshot exists to
+    // show instead); returning to live unhides and repaints in the
+    // same call.
+    if (options && options.replay) {
+      rootEl.hidden = true;
+      return;
+    }
+    rootEl.hidden = false;
     const vm = buildViewModel(observer);
     const set = (id, text) => {
       const n = doc.getElementById(id);

@@ -51,15 +51,15 @@ test("the seven viewer questions are all answerable from one block", () => {
   assert.equal(vm.workItem.round, 2);
   assert.equal(vm.workItem.merged, true);
   // present tense stays empty: everything in this block is finished
-  assert.deepEqual(vm.now,
-    { delegation: null, authority: false, joined: false });
+  assert.deepEqual(vm.now, { delegation: null, pendingCount: 0,
+    authority: false, joined: false });
 });
 
 test("the now-line speaks only from provably current signals", () => {
   const running = Ops.buildViewModel({ delegations: [
     { id: "x", status: "running" }] });
-  assert.deepEqual(running.now,
-    { delegation: "executing", authority: false, joined: false });
+  assert.deepEqual(running.now, { delegation: "executing",
+    pendingCount: 0, authority: false, joined: false });
   assert.equal(Ops.nowLine(running), "Now · executing");
   const queued = Ops.buildViewModel({ delegations: [
     { id: "x", status: "pending" }] });
@@ -188,6 +188,66 @@ test("unknowns stay unknown: junk and absence render as absence", () => {
     { id: "ok", status: "done" }] });
   assert.equal(partial.delegations.length, 1);
   assert.equal(partial.delegations[0].id, "ok");
+});
+
+test("running work is never masked by a newer pending row", () => {
+  // observer.delegations is newest-first: a fresh queued hand-off in
+  // slot 0 must not reduce an actually-executing company to 'queued'
+  const vm = Ops.buildViewModel({ delegations: [
+    { id: "newer-pending", status: "pending" },
+    { id: "older-running", status: "running" }] });
+  assert.equal(vm.now.delegation, "executing");
+  assert.equal(Ops.nowLine(vm), "Now · executing (+1 queued)");
+  // and the credential join binds to the RUNNING job, not the queue
+  const joined = Ops.buildViewModel({
+    delegations: [
+      { id: "newer-pending", status: "pending" },
+      { id: "older-running", status: "running" }],
+    grants: [{ capability: "edit_company_website", active: true,
+               delegation_id: "older-running" }] });
+  assert.equal(joined.now.joined, true);
+  const pendingOnlyGrant = Ops.buildViewModel({
+    delegations: [{ id: "queued-one", status: "pending" }],
+    grants: [{ capability: "edit_company_website", active: true,
+               delegation_id: "queued-one" }] });
+  assert.equal(pendingOnlyGrant.now.joined, false,
+    "a queued job is not executing under anything");
+});
+
+test("replay hides the desk; returning to live restores it", () => {
+  const nodes = {};
+  const mk = (id) => nodes[id] = { textContent: "", dataset: {},
+    hidden: false, children: [], className: "",
+    appendChild(c) { this.children.push(c); } };
+  ["ops-panel", "ops-stage", "ops-workitem", "ops-delegations",
+   "ops-grants", "ops-session"].forEach(mk);
+  const doc = {
+    getElementById: (id) => nodes[id] || null,
+    createElement: () => ({ textContent: "", className: "" })
+  };
+  // live: rendered and visible
+  Ops.render(doc, REAL_BLOCK);
+  assert.equal(nodes["ops-panel"].hidden, false);
+  assert.match(nodes["ops-workitem"].textContent, /PR #38/);
+  // switch to replay: the CURRENT desk must not be visible beside a
+  // historical session — two timeframes never share a screen
+  Ops.render(doc, REAL_BLOCK, { replay: true });
+  assert.equal(nodes["ops-panel"].hidden, true);
+  // switch back to live: immediately visible and repainted current
+  Ops.render(doc, REAL_BLOCK, { replay: false });
+  assert.equal(nodes["ops-panel"].hidden, false);
+  assert.match(nodes["ops-workitem"].textContent, /PR #38 — Gatekeeper: PASS/);
+});
+
+test("live.js always routes through the mode-aware render", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const src = fs.readFileSync(
+    path.resolve(__dirname, "../live/live.js"), "utf8");
+  // no conditional skip: the desk must be TOLD about replay so it can
+  // hide, not silently left un-repainted with stale live data
+  assert.ok(!src.includes('StromationOps && app.mode'), "mode-skip is back");
+  assert.match(src, /replay: app\.mode === "replay"/);
 });
 
 test("the DOM renderer paints the panel and only the panel", () => {
