@@ -370,6 +370,14 @@
     renderClock(scene);
     renderStage(scene);
     renderProcess(scene.stage);
+    if (window.StromationOps) {
+      // the operations desk shows only the CURRENT published block —
+      // in replay it hides itself entirely, because leaving the last
+      // live frame beside a historical session mixes two timeframes
+      window.StromationOps.render(document,
+        (app.publicState || {}).observer,
+        { replay: app.mode === "replay" });
+    }
     renderHUD();
     renderFeed(scene.events);
     renderConnection();
