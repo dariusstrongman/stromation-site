@@ -56,20 +56,42 @@
     return Math.round((b - a) / 1000);
   }
 
-  /* The stage the CURRENT work item is provably in, from the newest
-   * delegation + grant + verdict. Truth order: a running delegation is
-   * "executing"; a live grant with no running delegation still means
-   * the credential is out; a verdict tells review state; merged is
-   * terminal. Absent everything: no active work item. */
-  function deriveStage(vm) {
-    if (vm.workItem && vm.workItem.merged === true) return "shipped";
-    if (vm.delegations.some((d) => d.status === "running")) return "executing";
-    if (vm.grants.some((g) => g.active)) return "credential out";
-    if (vm.workItem && vm.workItem.verdict === "PASS") return "awaiting merge";
-    if (vm.workItem && (vm.workItem.verdict === "REVISE" ||
-                        vm.workItem.verdict === "BLOCK")) return "in review";
-    if (vm.delegations.length) return "handed off";
-    return null;
+  /* WHAT IS PROVABLY HAPPENING RIGHT NOW — and nothing else.
+   *
+   * observer.delegations, observer.grants and observer.work_item are
+   * independent recent records; combining them into one pipeline
+   * stage INVENTS a story (an old merged work item next to a fresh
+   * running delegation is not "shipped", and a finished delegation is
+   * not currently "handed off" to anyone). Only two signals prove
+   * present tense: a delegation whose status is running/pending, and
+   * a grant whose active flag is true. The ONE correlation allowed is
+   * the shared durable identifier the records actually carry —
+   * grant.delegation_id === delegation.id — which proves "executing
+   * under a live credential". The work item is always shown as the
+   * LATEST REVIEWED work, in the past tense it belongs in. Terminal
+   * delegations (done/failed) claim no current stage at all. */
+  function deriveNow(vm) {
+    const current = vm.delegations.find(
+      (d) => d.status === "running" || d.status === "pending") || null;
+    const liveGrants = vm.grants.filter((g) => g.active);
+    const joined = !!(current && liveGrants.some(
+      (g) => g.delegationId && g.delegationId === current.id));
+    return {
+      delegation: current ? (current.status === "running"
+        ? "executing" : "queued") : null,
+      authority: liveGrants.length > 0,
+      joined
+    };
+  }
+
+  function nowLine(vm) {
+    const now = vm.now;
+    if (now.joined) return "Now · executing under a live credential";
+    const bits = [];
+    if (now.delegation) bits.push(now.delegation);
+    if (now.authority) bits.push("credential out");
+    if (bits.length) return "Now · " + bits.join(" · ");
+    return "Now · no hand-off or credential is active";
   }
 
   /* observer jsonb -> a display-ready view model. Pure. */
@@ -144,7 +166,7 @@
 
     vm.empty = !vm.session && !vm.delegations.length && !vm.grants.length
       && !vm.workItem;
-    vm.stage = deriveStage(vm);
+    vm.now = deriveNow(vm);
     return vm;
   }
 
@@ -171,8 +193,11 @@
   function workItemLine(vm) {
     const w = vm.workItem;
     if (!w) return null;
-    const name = w.isPrivate ? "private work item"
-      : (w.repo || "work item") + (w.pr ? " · PR #" + w.pr : "");
+    // deliberately past tense: this is the latest REVIEWED work, an
+    // independent record — never proof of what is happening now
+    const name = "Latest reviewed work: " + (w.isPrivate
+      ? "private work item"
+      : (w.repo || "work item") + (w.pr ? " · PR #" + w.pr : ""));
     const bits = [w.verdictLabel];
     if (w.reviewedSha) bits.push("on " + w.reviewedSha);
     if (Number.isFinite(w.round)) bits.push("round " + w.round);
@@ -191,11 +216,10 @@
       const n = doc.getElementById(id);
       if (n) n.textContent = text;
     };
-    rootEl.dataset.stage = vm.stage || "idle";
+    rootEl.dataset.now = vm.now.joined ? "joined"
+      : (vm.now.delegation || vm.now.authority ? "active" : "idle");
 
-    set("ops-stage", vm.stage
-      ? "Stage · " + vm.stage
-      : "No delegated work item is active");
+    set("ops-stage", nowLine(vm));
 
     const work = doc.getElementById("ops-workitem");
     if (work) {
@@ -248,6 +272,6 @@
       : "No session metadata published.");
   }
 
-  return { buildViewModel, deriveStage, delegationLine, grantLine,
-           workItemLine, render };
+  return { buildViewModel, deriveNow, nowLine, delegationLine,
+           grantLine, workItemLine, render };
 });

@@ -330,7 +330,8 @@ footer a { color: var(--dim); }
 /* ── operations desk ─────────────────────────────────────────────── */
 .ops-panel { margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; background: var(--panel, rgba(255,255,255,0.02)); }
 .ops-stage { margin: 12px 0 2px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); }
-.ops-panel[data-stage="shipped"] .ops-stage { color: var(--good, #7dd87d); }
+.ops-panel[data-now="joined"] .ops-stage { color: var(--good, #7dd87d); }
+.ops-panel[data-now="idle"] .ops-stage { color: var(--faint); }
 .ops-workitem { margin: 4px 0 14px; font-size: 15px; color: var(--ink, #e8e8e8); }
 .ops-workitem[data-tone="good"] { color: var(--good, #7dd87d); }
 .ops-workitem[data-tone="warn"] { color: var(--warn, #e8c464); }
