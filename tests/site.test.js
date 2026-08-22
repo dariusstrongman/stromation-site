@@ -8,7 +8,8 @@ const routes = [
   "/", "/workers/", "/operations-employee/", "/custom/", "/how-it-works/",
   "/live/", "/privacy/", "/terms/", "/technology/", "/governance/",
   "/resources/automate-business-operations/",
-  "/resources/ai-inbox-management/"
+  "/resources/ai-inbox-management/",
+  "/resources/"
 ];
 
 function routeFile(route) {
