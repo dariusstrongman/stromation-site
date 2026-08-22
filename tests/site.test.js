@@ -9,6 +9,7 @@ const routes = [
   "/live/", "/privacy/", "/terms/", "/technology/", "/governance/",
   "/resources/automate-business-operations/",
   "/resources/ai-inbox-management/",
+  "/resources/ai-vs-virtual-assistant/",
   "/resources/"
 ];
 
