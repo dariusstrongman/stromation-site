@@ -1,19 +1,236 @@
-<!doctype html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Operations Resources | Stromation</title><meta name="description" content="Practical guides to AI inbox management, automated follow-up, and small-business operations from Stromation."><link rel="canonical" href="https://www.stromation.com/resources/"><meta property="og:title" content="AI Operations Resources | Stromation"><meta property="og:description" content="Practical guides to AI inbox management, automated follow-up, and small-business operations from Stromation."><meta property="og:type" content="website"><meta property="og:url" content="https://www.stromation.com/resources/"><meta property="og:image" content="https://www.stromation.com/logos/stromation-logo-dark.svg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#070809"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@1,400&display=swap" rel="stylesheet"><link rel="icon" href="/logos/stromation-mark.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/site.css"><script src="/assets/analytics.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Operations Resources | Stromation</title>
+<meta name="description" content="Practical guides to AI inbox management, automated follow-up, and small-business operations from Stromation.">
+<link rel="canonical" href="https://www.stromation.com/resources/">
+<meta property="og:title" content="AI Operations Resources | Stromation">
+<meta property="og:description" content="Practical guides to AI inbox management, automated follow-up, and small-business operations from Stromation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.stromation.com/resources/">
+<meta property="og:image" content="https://www.stromation.com/logos/stromation-logo-dark.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="/logos/stromation-mark.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --panel: #0f0f16;
+  --panel-2: #151520;
+  --line: #1f202b;
+  --line-2: #2a2b3a;
+  --ink: #e8eaf1;
+  --soft: #a0a1b0;
+  --dim: #767785;
+  --faint: #4d4e5a;
+  --cyan: #00E5FF;
+  --cyan-2: #55efff;
+  --wire: #14606e;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "IBM Plex Serif", Georgia, serif;
+  --max: 1000px;
+  --pad: clamp(20px, 5vw, 40px);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { color: var(--bg); background: var(--cyan); }
+a { color: var(--cyan); text-decoration: none; }
+a:hover { color: var(--cyan-2); text-decoration: underline; text-underline-offset: 4px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 3px; }
+.skip-link { position: fixed; left: 12px; top: -80px; z-index: 100; padding: 10px 14px; color: var(--ink); background: var(--panel-2); border: 1px solid var(--cyan); border-radius: 4px; }
+.skip-link:focus { top: 12px; }
+
+.wrap { width: min(100% - (var(--pad) * 2), var(--max)); margin-inline: auto; }
+
+/* ── header ───────────────────────────────────────────────── */
+.site-header { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); background: rgba(10,10,15,.96); backdrop-filter: blur(14px); }
+.site-header .wrap { min-height: 64px; display: flex; align-items: center; gap: 20px; }
+.brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.brand svg { width: 20px; height: 26px; color: var(--cyan); flex: none; }
+.brand span { font: 500 12px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; }
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+.site-nav a { color: var(--dim); font: 500 9px/1 var(--mono); letter-spacing: .08em; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+.site-nav a:hover, .site-nav a.is-current { color: var(--cyan); }
+.nav-cta { padding: 9px 12px; color: var(--bg); background: var(--cyan); border-radius: 4px; font-size: 11px; }
+.nav-cta:hover { color: var(--bg); background: var(--cyan-2); }
+
+/* ── page hero ───────────────────────────────────────────── */
+.page-hero { padding-block: clamp(70px, 10vw, 120px); border-bottom: 1px solid var(--line); background: linear-gradient(180deg, rgba(0,229,255,.04) 0%, transparent 100%); }
+.page-hero .wrap { text-align: left; }
+.eyebrow { margin: 0 0 14px; color: var(--cyan); font: 600 9px/1.6 var(--mono); letter-spacing: .28em; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(36px, 5.5vw, 64px); line-height: 1.08; letter-spacing: -0.03em; }
+.lede { margin-top: 20px; max-width: 62ch; color: var(--soft); font-size: clamp(15px, 1.2vw, 18px); line-height: 1.6; }
+
+/* ── resource grid ────────────────────────────────────────── */
+.resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; padding-block: clamp(48px, 7vw, 90px); }
+.resource-card { display: flex; flex-direction: column; padding: 26px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); transition: border-color 0.2s ease; }
+.resource-card:hover { border-color: var(--cyan); }
+.resource-link { display: flex; flex-direction: column; gap: 10px; }
+.resource-title { color: var(--ink); font: 600 18px/1.3 var(--sans); letter-spacing: -0.02em; text-decoration: none; }
+.resource-title:hover { color: var(--cyan); }
+.resource-desc { color: var(--soft); font-size: 15px; line-height: 1.6; }
+.resource-meta { margin-top: auto; display: flex; align-items: center; gap: 8px; font: 500 9px/1 var(--mono); color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+.resource-arrow { color: var(--cyan); }
+
+/* ── footer ───────────────────────────────────────────────── */
+.site-footer { border-top: 1px solid var(--line); padding-block: clamp(40px, 6vw, 70px); background: var(--panel-2); }
+.site-footer .wrap { display: flex; flex-wrap: wrap; gap: 20px 40px; align-items: center; justify-content: space-between; }
+.footer-brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.footer-brand svg { width: 18px; height: 24px; color: var(--cyan); flex: none; }
+.footer-brand span { font: 500 11px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+.footer-nav { display: flex; gap: 18px; }
+.footer-nav a { color: var(--dim); font: 400 9px/1 var(--mono); letter-spacing: .06em; }
+.footer-nav a:hover { color: var(--cyan); }
+.copyright { color: var(--dim); font: 400 9px/1 var(--mono); letter-spacing: .05em; }
+
+/* ── mobile ───────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .site-header .wrap { gap: 16px; }
+  .brand span { font-size: 11px; }
+  .site-nav { display: none; }
+  .resources-grid { grid-template-columns: 1fr; }
+  .page-hero .wrap { text-align: center; }
+  .lede { margin-inline: auto; }
+}
+</style>
 </head>
-<body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="wrap"><a class="brand" href="/" aria-label="Stromation home"><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M18 3C11 3 5 7 5 12c0 4 4 5 7 5M12 17c6 1 8 5 7 8-2 3-7 3-13 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="3" r="2" fill="currentColor"/><circle cx="12" cy="17" r="2" fill="currentColor"/><circle cx="5" cy="27" r="2" fill="currentColor"/></svg><span>Stromation</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button><nav id="site-nav" class="site-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/workers/">AI Employees</a><a href="/custom/">Custom</a><a href="/how-it-works/">How It Works</a><a href="/live/">Live</a><a class="nav-cta" href="/?intent=operations#contact">Start the pilot</a></nav></div></header>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Stromation home">
+      <svg viewBox="0 0 24 30" aria-hidden="true">
+        <path d="M18 3C11 3 5 7 5 12c0 4 4 5 7 5M12 17c6 1 8 5 7 8-2 3-7 3-13 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="18" cy="3" r="2" fill="currentColor"/>
+        <circle cx="12" cy="17" r="2" fill="currentColor"/>
+        <circle cx="5" cy="27" r="2" fill="currentColor"/>
+      </svg>
+      <span>Stromation</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/">Home</a>
+      <a href="/workers/">AI Employees</a>
+      <a href="/custom/">Custom</a>
+      <a href="/how-it-works/">How It Works</a>
+      <a href="/live/">Live</a>
+      <a class="nav-cta" href="/?intent=operations#contact">Start the pilot</a>
+    </nav>
+  </div>
+</header>
 <main id="main">
-<section class="page-hero"><div class="wrap"><p class="eyebrow">Practical guides</p><h1>Resources</h1><p class="lede">Practical guides for small businesses hiring an AI Operations Employee.</p></div></section>
-<section class="section" id="library"><div class="wrap"><div class="grid-3">
-<div class="card"><a class="card-link" href="/resources/ai-inbox-management/">
-<div class="card-head"><span class="card-title">AI Inbox Management for Small Business</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-<p class="card-desc"><span data-claim="inbox-triage" data-source="https://www.stromation.com/workers/" data-checked="2026-08-22">The AI Operations Employee classifies, routes, and tracks incoming messages without a full-time hire.</span></p>
-</a></div>
-<div class="card"><a class="card-link" href="/resources/automate-business-operations/">
-<div class="card-head"><span class="card-title">Small Business Operations Guide</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-<p class="card-desc"><span data-claim="business-operations" data-source="decision:4b614dbd-0a87-4b94-98d3-f3f56e3ea156" data-checked="2026-08-22">Recurring operations, written authority boundaries, and workload measurement for small businesses.</span></p>
-</a></div>
-</div></div></section>
-<section data-methodology class="section tint"><div class="wrap"><p style="font-size:0.85em;color:var(--dim)">Inbox triage classification and standard task types are described in Stromation's internal decisions (4b614dbd, 211760dd). Follow-up automation capability is recorded as decision 97c42619. Target-market definition for US small businesses (1–20 people) appears at https://www.stromation.com/workers/. Pricing $250 setup + $199/month is the founding pilot rate, live at the Stripe checkout. Authority boundary adjustment is decision 3e9f3d5b. Last reviewed <time datetime="2026-08-22">August 22, 2026</time>.</p></div></section>
-</main><footer class="site-footer"><div class="wrap"><div class="footer-grid"><div><a class="brand" href="/"><span>Stromation</span></a></div><nav class="footer-links" aria-label="Footer navigation"><a href="/workers/">AI Employees</a><a href="/privacy/">Privacy</a><a href="/custom/">Custom</a><a href="/terms/">Terms</a><a href="/how-it-works/">How It Works</a><a href="/technology/">Technology</a><a href="/live/">Live</a><a href="/governance/">Governance</a></nav></div><div class="footer-base"><span>© 2026 Stromation LLC</span><span><a href="/live/">Stromation Live</a></span></div></div></footer><script src="/assets/site.js" defer></script></body></html>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Practical guides</p>
+      <h1>AI Operations Resources</h1>
+      <p class="lede">Five focused guides for small businesses building an AI Operations Employee. Each page explains a specific capability inside the role.</p>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="resources-grid">
+      <article class="resource-card">
+        <a class="resource-link" href="/resources/ai-email-followup/">
+          <h2 class="resource-title">AI Follow-Up Email Automation</h2>
+          <p class="resource-desc">Automate follow-up emails inside a written boundary: monitor open threads, detect silence, draft replies, and send or preview before delivery.</p>
+          <span class="resource-meta">
+            <span>Follow-up automation</span>
+            <svg class="resource-arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <a class="resource-link" href="/resources/ai-vs-virtual-assistant/">
+          <h2 class="resource-title">AI Employee vs Virtual Assistant</h2>
+          <p class="resource-desc">Compare the AI Operations Employee with a virtual assistant: one-time setup, recurring cost, capabilities, and what each does best for small business.</p>
+          <span class="resource-meta">
+            <span>Cost comparison</span>
+            <svg class="resource-arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <a class="resource-link" href="/resources/automate-business-inbox/">
+          <h2 class="resource-title">Automate Your Business Inbox</h2>
+          <p class="resource-desc">Classify, route, and track incoming messages without hiring: triage that learns your categories, drafting, approval gates, and daily activity logs.</p>
+          <span class="resource-meta">
+            <span>Inbox triage</span>
+            <svg class="resource-arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <a class="resource-link" href="/resources/ai-sales-followup-automation/">
+          <h2 class="resource-title">AI Sales Follow-Up Automation</h2>
+          <p class="resource-desc">Turn replies intopipeline: monitor prospects, detect silence, draft value-driven follow-ups, and send only after you approve or preview the text.</p>
+          <span class="resource-meta">
+            <span>Sales pipeline</span>
+            <svg class="resource-arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <a class="resource-link" href="/resources/ai-operations-employee-in-action/">
+          <h2 class="resource-title">AI Operations Employee in Action</h2>
+          <p class="resource-desc">Watch the role work: rule-based operation inside written authority boundaries, real input/output, and daily plain-number activity summaries.</p>
+          <span class="resource-meta">
+            <span>Demo & guide</span>
+            <svg class="resource-arrow" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </article>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="footer-brand" href="/" aria-label="Stromation home">
+        <svg viewBox="0 0 24 30" aria-hidden="true">
+          <path d="M18 3C11 3 5 7 5 12c0 4 4 5 7 5M12 17c6 1 8 5 7 8-2 3-7 3-13 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="18" cy="3" r="2" fill="currentColor"/>
+          <circle cx="12" cy="17" r="2" fill="currentColor"/>
+          <circle cx="5" cy="27" r="2" fill="currentColor"/>
+        </svg>
+        <span>Stromation</span>
+      </a>
+      <p class="copyright" style="margin-top: 12px; font-size: 11px; color: var(--dim);">Operated by Stromation</p>
+    </div>
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="/workers/">AI Employees</a>
+      <a href="/custom/">Custom</a>
+      <a href="/how-it-works/">How It Works</a>
+      <a href="/live/">Live</a>
+      <a href="/?intent=operations#contact">Start the pilot</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
