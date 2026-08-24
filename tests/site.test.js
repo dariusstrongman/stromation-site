@@ -81,6 +81,65 @@ test("sitemap contains every intended route exactly once", () => {
   assert.deepEqual(found.sort(), [...routes].sort());
 });
 
+// THE SHELL IS A CONTRACT, AND IT APPLIES TO EVERY ROUTE.
+// Three tests further down already pin pieces of it — and each names the
+// HOMEPAGE specifically, because that is the page that had drifted when
+// they were written. On 2026-08-24 a new page drifted the same way in a
+// different direction: /resources/inbox-roi-calculator/ shipped with its
+// own inline stylesheet, its own palette and width, no shared header nav,
+// and NO analytics of any kind — invisible to GA4, on a page whose whole
+// job is conversion. Every required check passed, because nothing asked
+// "does this page belong to this site?".
+//
+// So the shell is asserted per ROUTE. Fixing it page by page just waits
+// for the next page.
+//
+// Two documented exceptions, both narrow and both still measured:
+//   /       renders its own CSS (see the shared-header test below) and
+//           measures with an inline gtag snippet instead of the shared
+//           script — deliberate for the landing page.
+//   /live/  is the observatory: its own stylesheets and its own chrome.
+const SELF_STYLED = new Set(["/", "/live/"]);
+const OWN_CHROME = new Set(["/live/"]);
+const GA4_ID = "G-0VDWHMS6MW";
+
+test("every route is measured", () => {
+  for (const route of routes) {
+    const html = readRoute(route);
+    const shared = /src="\/assets\/analytics\.js/.test(html);
+    const inline = html.includes(GA4_ID);
+    assert.ok(shared || inline,
+      `${route} loads neither /assets/analytics.js nor an inline ${GA4_ID} ` +
+      "snippet — it is invisible to analytics");
+  }
+});
+
+test("every route uses the shared stylesheet", () => {
+  for (const route of routes) {
+    if (SELF_STYLED.has(route)) continue;
+    assert.match(readRoute(route), /href="\/assets\/site\.css/,
+      `${route} does not link the shared stylesheet — a page with its own ` +
+      "inline design system stops inheriting sitewide changes");
+  }
+});
+
+test("every route carries the shared header navigation", () => {
+  for (const route of routes) {
+    if (OWN_CHROME.has(route)) continue;
+    const html = readRoute(route);
+    assert.match(html, /<header class="site-header">/, `${route} header`);
+    assert.match(html, /<nav id="site-nav" class="site-nav"/, `${route} nav`);
+    assert.match(html, /class="nav-cta"/,
+      `${route} has no header CTA — every page must offer a way to buy`);
+  }
+});
+
+test("every route carries a footer", () => {
+  for (const route of routes) {
+    assert.match(readRoute(route), /<footer/, `${route} has no footer`);
+  }
+});
+
 test("the retired Growth Operator page redirects to the flagship", () => {
   const html = fs.readFileSync(path.join(root, "growth-operator", "index.html"), "utf8");
   assert.match(html, /meta name="robots" content="noindex"/i);
