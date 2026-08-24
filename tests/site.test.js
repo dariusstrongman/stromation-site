@@ -11,6 +11,9 @@ const routes = [
   "/resources/ai-inbox-management/",
   "/resources/ai-vs-virtual-assistant/",
   "/resources/ai-email-followup/",
+  "/resources/ai-sales-followup/",
+  "/resources/ai-operations-employee-in-action/",
+  "/resources/automate-business-inbox/",
   "/resources/"
 ];
 
