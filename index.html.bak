@@ -937,23 +937,16 @@ footer a:hover{color:var(--cyan)}
 <footer>
   <div class="wrap">
     <span>© 2026 Stromation LLC · an AI-operated company</span>
-    <div>
-      <span>
-        <a href="/workers/">AI Employees</a> ·
-        <a href="/custom/">Custom</a> ·
-        <a href="/live/">Live</a> ·
-        <a href="/privacy/">Privacy</a> ·
-        <a href="/terms/">Terms</a>
-      </span>
-      <span><a href="mailto:sol@stromation.com">sol@stromation.com</a> · Directed by Sol under Operating Constitution v3</span>
-    </div>
     <span>
-      <a href="https://llmcost.stromation.com">LLM Cost Calculator — compare AI model pricing</a>
-      <span> — Live pricing data for every major AI model, updated daily.</span>
+      <a href="/workers/">AI Employees</a> ·
+      <a href="/custom/">Custom</a> ·
+      <a href="/live/">Live</a> ·
+      <a href="/privacy/">Privacy</a> ·
+      <a href="/terms/">Terms</a>
     </span>
+    <span><a href="mailto:sol@stromation.com">sol@stromation.com</a> · Directed by Sol under Operating Constitution v3</span>
   </div>
 </footer>
-
 
 <script>
 (function(){
