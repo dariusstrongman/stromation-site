@@ -5,6 +5,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 
+// Legacy .html URLs must remain crawlable long enough for search engines to see noindex.
 for (const [file, canonical, target] of [
   ["about.html", "https://www.stromation.com/", "/"],
   ["privacy.html", "https://www.stromation.com/privacy/", "/privacy/"],
