@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "html-validate:recommended"
+  ],
+  "rules": {
+    "doctype-style": "off",
+    "no-implicit-close": "off",
+    "no-inline-style": "off",
+    "no-trailing-whitespace": "off",
+    "wcag/h30": "off",
+    "long-title": "off",
+    "attribute-boolean-style": "off",
+    "attribute-empty-style": "off",
+    "no-raw-characters": "off",
+    "aria-label-misuse": "warn",
+    "no-redundant-aria-label": "warn"
+  }
+}

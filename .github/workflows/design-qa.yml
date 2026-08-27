@@ -1,0 +1,43 @@
+# The deterministic design-quality gate. A REQUIRED merge check: the
+# Stromation Gatekeeper fails closed when this check is missing, pending,
+# or red (STRO_SITE_REQUIRED_CHECKS, default "site-tests,design-qa").
+#
+# static half:   html-validate (malformed markup — the <ors> class),
+#                impeccable detect (anti-slop; error severity fails,
+#                the rest is reviewer evidence), copy hygiene.
+# rendered half: every route opened in Chromium at 1440x900 and 390x844;
+#                pageerrors/console errors/overflow fail; axe-core WCAG
+#                2.1 A/AA critical+serious fail; screenshots uploaded as
+#                evidence for the visual reviewer.
+name: design-qa
+permissions:
+  contents: read
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  design-qa:
+    name: design-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --omit=optional
+      - name: static design-qa
+        run: node scripts/design-qa-static.js
+      - name: install chromium
+        run: npx playwright install --with-deps chromium
+      - name: rendered design-qa
+        run: node scripts/design-qa-rendered.js
+      - name: upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-qa-evidence
+          path: artifacts/
+          retention-days: 30
