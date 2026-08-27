@@ -67,10 +67,16 @@ const VIEWPORTS = [["desktop", 1440, 900], ["mobile", 390, 844]];
         problems: [], axe_blocking: [], axe_reported: 0, ok: false };
       const ctx = await browser.newContext({
         viewport: { width, height } });
+      // Hermetic: external hosts (fonts, analytics, live data) are
+      // aborted so every run judges the same bytes. The aborts
+      // themselves surface as "Failed to load resource" console noise,
+      // which is filtered; every other console error still fails.
+      await ctx.route(/^(?!http:\/\/127\.0\.0\.1)/, r => r.abort());
       const page = await ctx.newPage();
       page.on("pageerror", e =>
         entry.problems.push(`pageerror: ${String(e.message).slice(0, 160)}`));
-      page.on("console", m => { if (m.type() === "error")
+      page.on("console", m => { if (m.type() === "error"
+        && !m.text().startsWith("Failed to load resource"))
         entry.problems.push(`console: ${m.text().slice(0, 160)}`); });
       page.on("requestfailed", r => { if (r.url().includes("127.0.0.1"))
         entry.problems.push(`request failed: ${r.url().slice(0, 120)}`); });
