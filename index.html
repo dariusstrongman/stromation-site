@@ -123,7 +123,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
 .strip span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--faint);white-space:nowrap;
   font-variant-numeric:tabular-nums}
-.strip b{color:var(--dim);font-weight:500}
+.strip span{color:var(--dim)}
+.strip b{color:var(--paper);font-weight:500}
 .strip .on{color:var(--cyan)}
 
 /* ── hero ─────────────────────────────────────────────────── */
@@ -321,7 +322,7 @@ p.b{color:var(--soft);margin:0 0 14px;max-width:60ch}
   align-items:baseline}
 .state .k{color:var(--soft);font-size:14.5px}
 .state .v{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);white-space:nowrap}
+  text-transform:uppercase;color:var(--dim);white-space:normal;text-align:right}
 .state .v.on{color:var(--cyan)}
 .contact{background:var(--g2);border:1px solid var(--line2);border-radius:14px;
   padding:clamp(28px,4vw,44px)}
@@ -433,7 +434,7 @@ footer a:hover{color:var(--cyan)}
 </header>
 
 <div class="strip">
-  <div class="wrap">
+  <div tabindex="0" class="wrap">
     <span>STATUS <b>FOUNDING PILOT · OPEN</b></span>
     <span>OPERATING CONSTITUTION <b>V3 · IN FORCE</b></span>
     <span>VENTURE 01 <b>TIER 1 · LIVE</b></span>
@@ -611,7 +612,7 @@ footer a:hover{color:var(--cyan)}
       </div>
     </div>
 
-    <div class="loop-line rise" role="img"
+    <div tabindex="0" class="loop-line rise" role="img"
       aria-label="A worker's lifecycle: objective, then context and permissions, then tools, then autonomous execution, then independent review, then result.">
       <ol aria-hidden="true">
         <li><b>OBJECTIVE</b></li><li>CONTEXT + PERMISSIONS</li><li>TOOLS</li>
@@ -770,7 +771,7 @@ footer a:hover{color:var(--cyan)}
       small, measurable businesses the workers research, build, operate and
       measure end to end. Cheap to test. Honest to score. Impossible to fake.</p>
 
-    <div class="tiers rise" role="img"
+    <div tabindex="0" class="tiers rise" role="img"
       aria-label="Venture tier ladder from Tier 0 candidate to Tier 4 core asset. Venture 01 is at Tier 1 experiment, live at llmcost.stromation.com.">
       <div class="tier"><span class="t">T0</span><b>Candidate</b>
         <span>research only, scored but not built</span></div>
@@ -806,7 +807,7 @@ footer a:hover{color:var(--cyan)}
     <p class="slede rise">Autonomy without memory is just speed. Every
       material decision at Stromation enters a ledger before the outcome is
       known. Then reality reports back.</p>
-    <div class="chainflow rise" role="img"
+    <div tabindex="0" class="chainflow rise" role="img"
       aria-label="The learning loop: hypothesis, evidence for and against, a bounded experiment with a maximum loss, the observed result, the decision, and the lesson recorded in the ledger.">
       <ol aria-hidden="true">
         <li><span class="k">Hypothesis</span><span>what Sol believes may be true</span></li>
@@ -844,7 +845,7 @@ footer a:hover{color:var(--cyan)}
       <h2>A job has a lifecycle</h2></div>
     <p class="slede rise">Define the outcome, connect only what the role needs,
       set the boundary, then judge the work from evidence.</p>
-    <div class="loop-line rise" role="img" aria-label="Define the job, connect capabilities, set authority, give context, work, report, remember, repeat.">
+    <div tabindex="0" class="loop-line rise" role="img" aria-label="Define the job, connect capabilities, set authority, give context, work, report, remember, repeat.">
       <ol aria-hidden="true"><li><b>DEFINE</b></li><li>CONNECT</li><li>SET AUTHORITY</li><li>WORK</li><li>REPORT</li><li>REMEMBER</li><li><b>REPEAT</b></li></ol>
     </div>
     <div class="cta-row rise" style="margin-top:24px"><a class="btn" href="/how-it-works/">See how the system works</a></div>
