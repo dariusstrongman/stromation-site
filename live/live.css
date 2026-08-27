@@ -9,7 +9,7 @@
   --paper: #f1f6f7;
   --soft: #aab7bd;
   --dim: #7d8c93;
-  --faint: #68777f;
+  --faint: #74838c;
   --cyan: #00e5ff;
   --cyan-dim: #087d8b;
   --cyan-wash: rgba(0, 229, 255, .075);
@@ -347,4 +347,10 @@ footer a { color: var(--dim); }
 .ops-row.is-quiet, .ops-row.is-plain { color: var(--faint); }
 .ops-row.is-empty { color: var(--faint); font-style: italic; border-left-style: dashed; }
 .ops-session { margin: 14px 0 4px; font-size: 13px; color: var(--faint); }
-.ops-note { margin: 8px 0 0; font-size: 12px; color: var(--faint); opacity: 0.85; }
+.ops-note { margin: 8px 0 0; font-size: 12px; color: var(--faint); }
+
+/* Mobile: the two office columns' minimums (330px + 390px) exceed a phone
+   viewport; stack them so the stage never widens the page. */
+@media (max-width: 700px) {
+  .office { grid-template-columns: minmax(0, 1fr); }
+}
