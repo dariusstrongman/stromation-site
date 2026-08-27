@@ -1,0 +1,17 @@
+{
+  "name": "stromation-site",
+  "private": true,
+  "description": "www.stromation.com \u2014 static site, no build step. devDependencies exist only for CI quality gates (site-tests, design-qa).",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node --test tests/site.test.js tests/live-theater.test.js tests/live-truth.test.js",
+    "design-qa:static": "node scripts/design-qa-static.js",
+    "design-qa:rendered": "node scripts/design-qa-rendered.js"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "html-validate": "11.10.0",
+    "impeccable": "3.6.0",
+    "playwright": "1.62.1"
+  }
+}

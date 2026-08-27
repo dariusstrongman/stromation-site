@@ -3,23 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const root = path.resolve(__dirname, "..");
-const routes = [
-  "/", "/workers/", "/operations-employee/", "/custom/", "/how-it-works/",
-  "/live/", "/privacy/", "/terms/", "/technology/", "/governance/",
-  "/resources/automate-business-operations/",
-  "/resources/ai-inbox-management/",
-  "/resources/ai-vs-virtual-assistant/",
-  "/resources/ai-email-followup/",
-  "/resources/ai-sales-followup/",
-  "/resources/ai-operations-employee-in-action/",
-  "/resources/automate-business-inbox/",
-  "/resources/"
-];
-
-function routeFile(route) {
-  return route === "/" ? path.join(root, "index.html") : path.join(root, route, "index.html");
-}
+const { routes, routeFile, root } = require("./routes.js");
 
 function readRoute(route) {
   return fs.readFileSync(routeFile(route), "utf8");
