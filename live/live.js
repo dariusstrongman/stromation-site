@@ -554,7 +554,7 @@
     } catch (error) {
       app.realtimeStatus = "unavailable";
       render();
-      console.error("Stromation public feed unavailable:", error && error.message ? error.message : error);
+      console.warn("Stromation public feed unavailable:", error && error.message ? error.message : error);
     }
     window.addEventListener("offline", () => { app.realtimeStatus = "unavailable"; renderConnection(); });
     window.addEventListener("online", reconnect);
