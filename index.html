@@ -21,31 +21,51 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
+  "@graph": [
     {
-      "@type": "Question",
-      "name": "What is the AI Operations Employee?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "An AI that monitors your business inbox, drafts replies, follows up on open items, and delivers a daily report. $199/month."
-      }
+      "@type": "Organization",
+      "@id": "https://www.stromation.com/#org",
+      "name": "Stromation",
+      "url": "https://www.stromation.com/",
+      "logo": "https://www.stromation.com/logos/stromation-logo-dark.svg",
+      "email": "hello@stromation.com",
+      "sameAs": []
     },
     {
-      "@type": "Question",
-      "name": "How much does it cost?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Founding Pilot pricing: $250 one-time setup plus $199 per month. Cancel any time."
-      }
+      "@type": "WebSite",
+      "@id": "https://www.stromation.com/#website",
+      "url": "https://www.stromation.com/",
+      "name": "Stromation",
+      "publisher": {"@id": "https://www.stromation.com/#org"}
     },
     {
-      "@type": "Question",
-      "name": "What does it actually do?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "It reads every email, classifies requests, drafts routine replies, flags anything needing your judgment, follows up on unanswered threads, and sends you a plain-number report each morning."
-      }
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the AI Operations Employee?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An AI that monitors your business inbox, drafts replies, follows up on open items, and delivers a daily report. $199/month."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does it cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Founding Pilot pricing: ( one-time setup plus $199 per month. Cancel any time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does it actually do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It reads every email, classifies requests, drafts routine replies, flags anything needing your judgment, follows up on unanswered threads, and sends you a plain-number report each morning."
+          }
+        }
+      ]
     }
   ]
 }
