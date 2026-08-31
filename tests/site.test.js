@@ -142,7 +142,11 @@ test("only approved offers and prices appear anywhere", () => {
   assert.match(readRoute("/operations-employee/"), /\$1,000 setup \+ \$1,250 per month/);
   assert.match(readRoute("/"), /\$1,000 setup \+ \$1,250 per month/);
   assert.match(readRoute("/custom/"), /Starting at \$1,500 setup \+ \$1,500\/month/i);
-  assert.doesNotMatch(source, /\$199\b|\$250\b|\$299\b/, "pre-pivot pricing resurfaced");
+  // bare figures stay allowed — competitor citations legitimately quote
+  // their own prices (Keap at $299/mo). The guard bans the OLD OFFER
+  // phrasings, which is what resurfacing would actually look like.
+  assert.doesNotMatch(source, /\$199\s*(?:\/|per\s)?mo|\$250 (?:setup|one-time)|\$299\/month/i,
+    "pre-pivot pricing resurfaced");
   assert.doesNotMatch(source, /founding pilot/i, "pilot framing resurfaced");
   // event-driven honesty: never imply continuous inference
   assert.match(readRoute("/operations-employee/"), /wakes when work arrives/i);
