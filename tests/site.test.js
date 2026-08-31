@@ -138,9 +138,12 @@ test("only approved offers and prices appear anywhere", () => {
   assert.doesNotMatch(source, /first ten customers/i);
   assert.doesNotMatch(source, /Operations Worker/, "coming-soon shadow of the flagship");
   assert.doesNotMatch(source, /Custom AI Worker\b/);
-  assert.match(readRoute("/operations-employee/"), /\$250 setup \+ \$199 per month/);
-  assert.match(readRoute("/"), /\$250 setup \+ \$199 per month/);
-  assert.match(readRoute("/custom/"), /Starting at \$500 setup \+ \$299\/month/i);
+  // Repriced HIGH TICKET by owner decision 2026-08-31 — human-led sale.
+  assert.match(readRoute("/operations-employee/"), /\$1,000 setup \+ \$1,250 per month/);
+  assert.match(readRoute("/"), /\$1,000 setup \+ \$1,250 per month/);
+  assert.match(readRoute("/custom/"), /Starting at \$1,500 setup \+ \$1,500\/month/i);
+  assert.doesNotMatch(source, /\$199\b|\$250\b|\$299\b/, "pre-pivot pricing resurfaced");
+  assert.doesNotMatch(source, /founding pilot/i, "pilot framing resurfaced");
   // event-driven honesty: never imply continuous inference
   assert.match(readRoute("/operations-employee/"), /wakes when work arrives/i);
   // authority split stated
